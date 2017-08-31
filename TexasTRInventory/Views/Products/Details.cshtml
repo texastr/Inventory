@@ -1,0 +1,114 @@
+@model TexasTRInventory.Models.Product
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.SKU)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SKU)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PartNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PartNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AmazonASIN)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AmazonASIN)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Inventory)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Inventory)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Info)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Info)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.OurCost)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.OurCost)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Dealer)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Dealer)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MAP)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MAP)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Dimentions)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Dimentions)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Weight)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UPC)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UPC)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Website)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Website)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageContents)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PackageContents)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Category)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Manufacturer)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Manufacturer.ID)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
