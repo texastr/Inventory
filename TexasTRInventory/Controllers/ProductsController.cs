@@ -9,14 +9,13 @@ using TexasTRInventory.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Web;
-//EXP This is me, testing the git hub bullshit. Testing again.
+
 namespace TexasTRInventory.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly InventoryContext _context;
-        private int IHopeThisIsPersistant = 0;
-
+  
         public ProductsController(InventoryContext context)
         {
             _context = context;    
@@ -86,8 +85,8 @@ namespace TexasTRInventory.Controllers
         private string uniquePath(string fileName)
         {
             const string IMAGE_FOLDER = "Images";  
-            string newFileName = String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), IHopeThisIsPersistant++, fileName);
-            string root = HttpRuntime.AppDomainAppPath;
+            string newFileName = String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), fileName);
+            string root = "D:/home/wwwroot"; /*Environment.GetEnvironmentVariable("HOME"); "~"; ""; // HttpRuntime.AppDomainAppPath;*/
             return Path.Combine(root,IMAGE_FOLDER,newFileName);
         }
 

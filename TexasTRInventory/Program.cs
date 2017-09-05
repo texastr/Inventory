@@ -18,8 +18,8 @@ namespace TexasTRInventory
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
                 .Build();
-
-            host.Run();
+            
+                host.Run();
         }
     }
 }

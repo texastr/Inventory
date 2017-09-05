@@ -92,7 +92,7 @@ namespace TexasTRInventory
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseDatabaseErrorPage(); commenting this out, because it's causing errors. This maybe a bad idea.
+                app.UseDatabaseErrorPage(); //EXP 9.1.17 putting it back in //commenting this out, because it's causing errors. This maybe a bad idea.
                 app.UseBrowserLink();
             }
             else

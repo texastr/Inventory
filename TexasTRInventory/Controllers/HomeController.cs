@@ -10,6 +10,8 @@ namespace TexasTRInventory.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["Message"] = "testing";
+
             return View();
         }
 

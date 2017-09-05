@@ -8,21 +8,21 @@ namespace TexasTRInventory.Models
     public class Product
     {
         public int ID { get; set; } //EXP 8.8.17 I guess we should have special primary key field
-        public int ManufacturerID { get; set; }
+        public int? ManufacturerID { get; set; }
         public Manufacturer Manufacturer { get; set; }
         public string SKU { get; set; }
         public string PartNumber { get; set; }
         public string AmazonASIN { get; set; }
         public string Name { get; set; }
-        public int Inventory { get; set; }
+        public int? Inventory { get; set; }
         public string Info { get; set; }
-        public decimal OurCost { get; set; }
+        public decimal? OurCost { get; set; }
         // is this field used?
         public string Dealer { get; set; }
-        public decimal MAP { get; set; }
+        public decimal? MAP { get; set; }
         //TODO make dimensions into its own class
         public string Dimentions { get; set; }
-        public decimal Weight { get; set; }
+        public decimal? Weight { get; set; }
         public string UPC { get; set; }
         public string Website { get; set; }
         public string PackageContents { get; set; }
