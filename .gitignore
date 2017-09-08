@@ -1,6 +1,7 @@
 ## EXP 8.31.17 My own ignores go on top
 appsettings.json
 app.config
+TexasTRInventory/app.config
 Secrets.cs
 Images/
 
