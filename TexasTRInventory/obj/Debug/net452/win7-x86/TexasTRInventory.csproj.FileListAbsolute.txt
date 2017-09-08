@@ -272,7 +272,6 @@ C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRI
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.AssemblyInfo.cs
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.exe
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.pdb
-C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csprojResolveAssemblyReference.cache
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Azure.KeyVault.Core.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.Edm.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.OData.dll
@@ -283,4 +282,11 @@ C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRI
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.OData.resources.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.Services.Client.resources.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\System.Spatial.resources.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csprojResolveAssemblyReference.cache
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Azure.KeyVault.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Azure.KeyVault.WebKey.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Rest.ClientRuntime.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Rest.ClientRuntime.Azure.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\UserSecretsAssemblyInfo.cs

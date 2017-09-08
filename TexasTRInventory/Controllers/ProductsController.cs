@@ -9,6 +9,13 @@ using TexasTRInventory.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Web;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.Windows.Forms;
+using Microsoft.Azure.KeyVault;
+using System.Web.Configuration;
+using System.Configuration;
 
 namespace TexasTRInventory.Controllers
 {
@@ -38,12 +45,12 @@ namespace TexasTRInventory.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Manufacturer)
+                .Include(p => p.ImageFilePath)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {
                 return NotFound();
             }
-
             return View(product);
         }
 
@@ -53,7 +60,7 @@ namespace TexasTRInventory.Controllers
             ViewData["ManufacturerID"] = new SelectList(_context.Manufacturers, "ID", "ID");
             return View();
         }
-
+        
         // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -64,16 +71,19 @@ namespace TexasTRInventory.Controllers
             if (ModelState.IsValid)
             {
                 //EXP 8.30.17 adding in stuff regarding the file
-                //TODO get the right new path, check it's an image, throw exception handling everywhere
-                FilePath productPhoto = new FilePath { FileName = "bad File" };
-                string newPath = uniquePath(upload.FileName);
-                using (FileStream fileStream = new FileStream(newPath, FileMode.CreateNew))
+                //TODO throw exception handling everywhere. handle files that are too big (e.g. Jared's tiff)
+                if (upload != null)
                 {
-                    await upload.CopyToAsync(fileStream);
-                }
-                productPhoto.FileName = newPath;            
-                product.ImageFilePath = productPhoto;
-
+                    if (upload.ContentType.StartsWith("image/"))
+                    {
+                        product.ImageFilePath = await UploadFile(upload);
+                    }
+                    else
+                    {
+                        //TODO
+                        MessageBox.Show("The file you chose wasn't an image and won't be saved. Posner! Find a better way to deal with this");
+                    }
+                                    }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -82,12 +92,27 @@ namespace TexasTRInventory.Controllers
             return View(product);
         }
 
-        private string uniquePath(string fileName)
+        private async Task<FilePath> UploadFile(IFormFile upload)
         {
-            const string IMAGE_FOLDER = "Images";  
-            string newFileName = String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), fileName);
-            string root = "D:/home/wwwroot"; /*Environment.GetEnvironmentVariable("HOME"); "~"; ""; // HttpRuntime.AppDomainAppPath;*/
-            return Path.Combine(root,IMAGE_FOLDER,newFileName);
+            FilePath ret = new FilePath { FileName = "bad File" };
+            string newFileName = UniqueFileName(upload.FileName);
+            CloudBlockBlob blob = await GlobalCache.GetBlob(newFileName);
+            using (Stream intermediateMemory = new MemoryStream())
+            {
+                upload.CopyTo(intermediateMemory);
+                intermediateMemory.Seek(0, SeekOrigin.Begin);
+                blob.UploadFromStream(intermediateMemory);
+            }
+
+            ret.FileName = newFileName;
+
+
+            return ret;
+        }
+
+        private string UniqueFileName(string fileName)
+        {
+            return String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), fileName);
         }
 
         // GET: Products/Edit/5
@@ -168,6 +193,18 @@ namespace TexasTRInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.SingleOrDefaultAsync(m => m.ID == id);
+            //EXP 9.6.17
+            var filePaths = _context.FilePaths.Where(f => f.ProductID == id);
+            foreach (FilePath fp in filePaths)
+            {
+                //This will be wasteful. Only significant if we have many images for a product
+                if (!String.IsNullOrEmpty(fp.FileName))
+                {
+                    CloudBlockBlob blob = await GlobalCache.GetBlob(fp.FileName);
+                    await blob.DeleteIfExistsAsync();
+                }
+            }
+            _context.FilePaths.RemoveRange(filePaths);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

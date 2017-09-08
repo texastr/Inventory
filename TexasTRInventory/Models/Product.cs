@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,6 +34,8 @@ namespace TexasTRInventory.Models
         */
 
         //8.30.17 putting in the file
+        //[ForeignKey("FilePath")]
+        //public int? FilePathID { get; set; }
         public virtual FilePath ImageFilePath { get; set;}
     }
 }

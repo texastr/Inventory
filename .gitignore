@@ -1,5 +1,6 @@
 ## EXP 8.31.17 My own ignores go on top
 appsettings.json
+app.config
 Secrets.cs
 Images/
 

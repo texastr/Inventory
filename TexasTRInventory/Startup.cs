@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using TexasTRInventory.Data; //EXP
 using TexasTRInventory.Models;
 using TexasTRInventory.Services;
+using Microsoft.Azure.KeyVault;
+using System.Web.Configuration;
 
 namespace TexasTRInventory
 {
@@ -29,9 +31,18 @@ namespace TexasTRInventory
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets<Startup>();
             }
-
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            //EXP 9.8.17. I hope this is the right spot
+            if(env.IsDevelopment())
+            {
+                GlobalCache.Initialize(WebConfigurationManager.AppSettings);
+            }
+            else
+            {
+                GlobalCache.Initialize(Configuration);
+            }
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -51,7 +62,11 @@ namespace TexasTRInventory
 
             services.AddMvc();
 
-            //EXP 8.2.17. copying from internet
+            //EXP 9/7/17. Adding this from https://blogs.msdn.microsoft.com/jpsanders/2017/05/16/azure-net-core-application-settings/
+            //goal is to read env. variables from azure
+            services.AddSingleton<IConfiguration>(Configuration);
+
+                //EXP 8.2.17. copying from internet
             services.Configure<IdentityOptions>(options =>
             {
                 //Password settings
