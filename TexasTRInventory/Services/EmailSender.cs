@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace TexasTRInventory.Services
 {
-    public class EmailSender : IEmailSender
+    /*Commenting out this entire class while moving from user secret store to azure key vault. It seems that we use the MessageServices class instead
+     * public class EmailSender : IEmailSender
     {
         public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
         {
@@ -34,5 +35,5 @@ namespace TexasTRInventory.Services
             msg.AddTo(new EmailAddress(email));
             return client.SendEmailAsync(msg);
         }
-    }
+    }*/
 }

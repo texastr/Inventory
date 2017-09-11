@@ -21,7 +21,7 @@ namespace TexasTRInventory.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
+        //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
@@ -30,14 +30,14 @@ namespace TexasTRInventory.Controllers
             SignInManager<ApplicationUser> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
-            ISmsSender smsSender,
+            //ISmsSender smsSender,
             ILoggerFactory loggerFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
-            _smsSender = smsSender;
+            //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -390,10 +390,10 @@ namespace TexasTRInventory.Controllers
             {
                 await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
             }
-            else if (model.SelectedProvider == "Phone")
+            /*else if (model.SelectedProvider == "Phone")
             {
                 await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
-            }
+            }*/ //ESP 9.2.17 We're not going to do SMS sign up
 
             return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }

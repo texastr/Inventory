@@ -14,6 +14,8 @@ using TexasTRInventory.Models;
 using TexasTRInventory.Services;
 using Microsoft.Azure.KeyVault;
 using System.Web.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace TexasTRInventory
 {
@@ -24,14 +26,16 @@ namespace TexasTRInventory
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                //EXP 9.11.17 See if I can get rid of user secret store stuff and replace with azure key stuff.
+                /*;
 
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets<Startup>();
             }
-            builder.AddEnvironmentVariables();
+            builder*/.AddEnvironmentVariables();
             Configuration = builder.Build();
 
             //EXP 9.8.17. I hope this is the right spot
@@ -92,10 +96,11 @@ namespace TexasTRInventory
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
+            //services.AddTransient<ISmsSender, AuthMessageSender>(); EXP 9.2.17 I have no intention of supporting SMS
 
             //EXP 8.2.17 apparently this allows us to send emails
-            services.Configure<AuthMessageSenderOptions>(Configuration);
+            //EXP 8.9.17 no longer using that user secret store garbage
+            //services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage;
@@ -18,6 +19,15 @@ namespace TexasTRInventory
         private static IConfiguration onlineConfig;
         private static bool isOnline;
         private static CloudBlobContainer BlobContainer;
+        private static KeyVaultClient keyVaultClient;
+        private static Dictionary<string, string> secrets;
+        
+        static GlobalCache()
+        {
+            secrets = new Dictionary<string, string>();
+            keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+        }
+
 
         public static void Initialize(NameValueCollection config)
         {
@@ -36,28 +46,42 @@ namespace TexasTRInventory
         {
             return isOnline ? onlineConfig[key] : localConfig[key];
         }
-        
+
+        static async public Task<String> GetSendGridKey()
+        {
+            return await GetSecret("SendGridKey");
+        }
+
         static async public Task<CloudBlockBlob> GetBlob(string fileName)
         {
            if (BlobContainer == null)
             {
-                //TODO should be able to save this off in a field
-                var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
-
-                var sec = await kv.GetSecretAsync("https://expkeyvault.vault.azure.net:443/secrets/AzureBlobKey/010bc658fe9442d8b43bc5621c6e5551"/*Indexer("SecretUri")*/);
-
-                StorageCredentials credentials = new StorageCredentials(Secrets.AzureName, Secrets.AzureKey);
+                string blobKey = await GetSecret("AzureBlobKey");
+                StorageCredentials credentials = new StorageCredentials(Indexer("AzureName"), blobKey);
                 CloudStorageAccount account = new CloudStorageAccount(credentials, true);
                 CloudBlobClient client = account.CreateCloudBlobClient();
-                BlobContainer = client.GetContainerReference("images"); //TODO I don't like hardcoding the container name
+                BlobContainer = client.GetContainerReference(Indexer("ContainerName"));
             }
 
             return BlobContainer.GetBlockBlobReference(fileName);
         }
 
+        //EXP 9.2.17
+        static async public Task<string> GetSecret(string secretName)
+        {
+            if (!secrets.ContainsKey(secretName))
+            {
+                string secretUri = "https://" + Indexer("keyVaultName") + ".vault.azure.net/secrets/" + secretName + "/";
+                SecretBundle secret = await keyVaultClient.GetSecretAsync(secretUri);
+                secrets.Add(secretName, secret.Value);
+            }
+
+            return secrets[secretName];
+        }
+
         //EXP copied off the internet
         //the method that will be provided to the KeyVaultClient
-        public static async Task<string> GetToken(string authority, string resource, string scope)
+        private static async Task<string> GetToken(string authority, string resource, string scope)
         {
             var authContext = new AuthenticationContext(authority);
             ClientCredential clientCred = new ClientCredential(Indexer("ClientId"), Indexer("ClientSecret"));

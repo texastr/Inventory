@@ -97,6 +97,8 @@ namespace TexasTRInventory.Controllers
             FilePath ret = new FilePath { FileName = "bad File" };
             string newFileName = UniqueFileName(upload.FileName);
             CloudBlockBlob blob = await GlobalCache.GetBlob(newFileName);
+            blob.Properties.ContentType = upload.ContentType;
+
             using (Stream intermediateMemory = new MemoryStream())
             {
                 upload.CopyTo(intermediateMemory);
