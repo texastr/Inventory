@@ -69,6 +69,9 @@ namespace TexasTRInventory
         //EXP 9.2.17
         static async public Task<string> GetSecret(string secretName)
         {
+            //EXP 9.13.17. Handling the disabling of our vault :(
+            if (secretName == Constants.SecretNames.AdminInitializer) return "fireworks";
+
             if (!secrets.ContainsKey(secretName))
             {
                 string secretUri = "https://" + Indexer("keyVaultName") + ".vault.azure.net/secrets/" + secretName + "/";

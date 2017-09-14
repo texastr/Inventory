@@ -10,14 +10,14 @@ namespace TexasTRInventory.Data
         {
         }
 
-        public DbSet<Manufacturer> Manufacturers { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<FilePath> FilePaths { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);//EXP 8.9.17 Got this from SA. please god let it work.
-            modelBuilder.Entity<Manufacturer>().ToTable("Manufacturer");
+            modelBuilder.Entity<Supplier>().ToTable("Supplier");
             modelBuilder.Entity<Product>().ToTable("Product");
             modelBuilder.Entity<FilePath>().ToTable("FilePath");
 

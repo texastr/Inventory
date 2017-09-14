@@ -31,7 +31,9 @@ namespace TexasTRInventory.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var inventoryContext = _context.Products.Include(p => p.Manufacturer);
+            await DbInitializer.Initialize(_context);
+
+            var inventoryContext = _context.Products.Include(p => p.Supplier);
             return View(await inventoryContext.ToListAsync());
         }
 
@@ -44,7 +46,7 @@ namespace TexasTRInventory.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Manufacturer)
+                .Include(p => p.Supplier)
                 .Include(p => p.ImageFilePath)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
@@ -57,7 +59,7 @@ namespace TexasTRInventory.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["ManufacturerID"] = new SelectList(_context.Manufacturers, "ID", "ID");
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID");
             return View();
         }
         
@@ -66,7 +68,7 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile upload,[Bind("ID,ManufacturerID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Create(IFormFile upload,[Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +90,7 @@ namespace TexasTRInventory.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["ManufacturerID"] = new SelectList(_context.Manufacturers, "ID", "ID", product.ManufacturerID);
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
             return View(product);
         }
 
@@ -130,7 +132,7 @@ namespace TexasTRInventory.Controllers
             {
                 return NotFound();
             }
-            ViewData["ManufacturerID"] = new SelectList(_context.Manufacturers, "ID", "ID", product.ManufacturerID);
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
             return View(product);
         }
 
@@ -139,7 +141,7 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,ManufacturerID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
             if (id != product.ID)
             {
@@ -166,7 +168,7 @@ namespace TexasTRInventory.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["ManufacturerID"] = new SelectList(_context.Manufacturers, "ID", "ID", product.ManufacturerID);
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
             return View(product);
         }
 
@@ -179,7 +181,7 @@ namespace TexasTRInventory.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Manufacturer)
+                .Include(p => p.Supplier)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {

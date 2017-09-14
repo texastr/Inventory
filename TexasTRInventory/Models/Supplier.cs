@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TexasTRInventory.Models
 {
-    public class Manufacturer
+    public class Supplier
     {
         public int ID { get; set; }
         public string Name { get; set; }

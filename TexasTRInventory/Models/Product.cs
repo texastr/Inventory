@@ -9,8 +9,8 @@ namespace TexasTRInventory.Models
     public class Product
     {
         public int ID { get; set; } //EXP 8.8.17 I guess we should have special primary key field
-        public int? ManufacturerID { get; set; }
-        public Manufacturer Manufacturer { get; set; }
+        public int? SupplierID { get; set; }
+        public Supplier Supplier { get; set; }
         public string SKU { get; set; }
         public string PartNumber { get; set; }
         public string AmazonASIN { get; set; }

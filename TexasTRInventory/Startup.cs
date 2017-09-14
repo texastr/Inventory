@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using TexasTRInventory.Data; //EXP
 using TexasTRInventory.Models;
 using TexasTRInventory.Services;
+using TexasTRInventory.Authorization;
 using Microsoft.Azure.KeyVault;
 using System.Web.Configuration;
 using Microsoft.AspNetCore.Authorization;
@@ -64,8 +65,14 @@ namespace TexasTRInventory
                 .AddEntityFrameworkStores<InventoryContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
-
+            services.AddMvc(config => //EXP 9.11. from https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
+            
             //EXP 9/7/17. Adding this from https://blogs.msdn.microsoft.com/jpsanders/2017/05/16/azure-net-core-application-settings/
             //goal is to read env. variables from azure
             services.AddSingleton<IConfiguration>(Configuration);
@@ -101,10 +108,19 @@ namespace TexasTRInventory
             //EXP 8.2.17 apparently this allows us to send emails
             //EXP 8.9.17 no longer using that user secret store garbage
             //services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            //EXP 9.11.17 https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data
+            //Allows the authorization handlers to work
+            services.AddScoped<IAuthorizationHandler, AdministratorAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, InternalUserAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, ProductIsSuppliedAuthorizationHandler>();
+
         }
 
+        //9.11.17 Making this async void. This is bad, but maybe we can get a heter because this is like an event handler?
+        //9.17.17 Now it's OK being async task? Deut. 29:29.
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, InventoryContext context)
+        public async Task Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, InventoryContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -133,8 +149,9 @@ namespace TexasTRInventory
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+
             //EXP
-            DbInitializer.Initialize(context);
+            await DbInitializer.Initialize(context);
         }
     }
 }
