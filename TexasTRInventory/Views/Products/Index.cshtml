@@ -58,9 +58,12 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Category)
                 </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Supplier)
-            </th>
+                @if (Utils.IsInternalUser(User))
+                {
+                    <th>
+                        @Html.DisplayNameFor(model => model.Supplier)
+                    </th>
+                }
             <th></th>
         </tr>
     </thead>
@@ -112,9 +115,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Category)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Supplier.ID)
-            </td>
+            @*EXP 9.18.17. hiding this for external users*@
+            @if(Utils.IsInternalUser(User))
+            {
+                <td>
+                <!--EXP 9.14.17 Making it display the name!-->
+                @Html.DisplayFor(modelItem => item.Supplier.Name)
+                </td>
+            }
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ID">Details</a> |

@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using TexasTRInventory.Models;
 using TexasTRInventory.Models.AccountViewModels;
 using TexasTRInventory.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using TexasTRInventory.Data;
 
 namespace TexasTRInventory.Controllers
 {
@@ -25,13 +27,17 @@ namespace TexasTRInventory.Controllers
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
+        //EXP 9.14.17 we need the context, to get the available suppliers
+        private readonly InventoryContext _context;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             //ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            InventoryContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -39,6 +45,7 @@ namespace TexasTRInventory.Controllers
             _emailSender = emailSender;
             //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
         }
 
         //
@@ -99,6 +106,12 @@ namespace TexasTRInventory.Controllers
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            List<Supplier> supplierList = new List<Supplier>(_context.Suppliers)
+            {
+                new Supplier() { ID = -1, Name = "Internal User" } //Copy what's in the database and add on one dummy value
+            };
+            ViewData["SupplierID"] = new SelectList(supplierList, "ID", "Name");
+
             return View();
         }
 
@@ -107,13 +120,27 @@ namespace TexasTRInventory.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(UserViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+
+                IdentityResult result; //EXP 9.15.17 We can now create users without passwords
+                if (String.IsNullOrWhiteSpace(model.Password))
+                {
+                    result = await _userManager.CreateAsync(user);
+                }
+                else
+                {
+                    result = await _userManager.CreateAsync(user, model.Password);
+                }
+                
+                
+                //EXP 9.14.17 trying to get the supplier ID
+                int? supplier = model.SupplierID;
+
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
@@ -126,12 +153,27 @@ namespace TexasTRInventory.Controllers
                         $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                     //await _signInManager.SignInAsync(user, isPersistent: false); <=comment out so that users aren't logged in until they verify they're email address
                     _logger.LogInformation(3, "User created a new account with password.");
+
+                    //Give this user his claims and role.
+                    int? supplierID = model.SupplierID;
+                    if(supplierID == -1)
+                    {
+                        await _userManager.AddToRoleAsync(user, Constants.Roles.InternalUser);
+                    }
+                    else
+                    {
+                        await _userManager.AddClaimAsync(user, new Claim(Constants.ClaimNames.Supplier, supplierID.ToString()));
+                        await _userManager.AddToRoleAsync(user, Constants.Roles.Supplier);
+                    }
+
                     return RedirectToLocal(returnUrl);
+
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
+            //Must also repopulate the list of suppliers. Maybe I should refactor it to a different tag
             return View(model);
         }
 
@@ -240,6 +282,7 @@ namespace TexasTRInventory.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
+            //EXP 9.15.17 not going to actually confirm it until after they've created a password and we're in the setPassword post method.
             if (userId == null || code == null)
             {
                 return View("Error");
@@ -249,8 +292,11 @@ namespace TexasTRInventory.Controllers
             {
                 return View("Error");
             }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            //var result = await _userManager.ConfirmEmailAsync(user, code);
+            //return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            //EXP 9.15.17. Users don't have passwords when their account is being confirmed.
+            //TODO where really does SetPassword.cshtml belong?
+            return View("~/Views/Manage/SetPassword.cshtml");
         }
 
         //
@@ -304,7 +350,8 @@ namespace TexasTRInventory.Controllers
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        //EXP 9.15.17 adding userID param to see if I can get the user ID
+        public IActionResult ResetPassword(string code = null, string userID = null)
         {
             return code == null ? View("Error") : View();
         }
@@ -320,7 +367,8 @@ namespace TexasTRInventory.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            //var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByIdAsync(model.UserID);
             if (user == null)
             {
                 // Don't reveal that the user does not exist

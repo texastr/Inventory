@@ -13,9 +13,10 @@ namespace TexasTRInventory.Controllers
     [AllowAnonymous] //EXP 9.11.17
     public class HomeController : Controller
     {
+
         public IActionResult Index()
         {
-            
+
             ViewData["Message"] = "testing";
 
             ViewData["EXPTESTKEY"] = GlobalCache.Indexer("EXPOnlyOnLocal");

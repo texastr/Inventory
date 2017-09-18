@@ -13,6 +13,7 @@ namespace TexasTRInventory.Data
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<FilePath> FilePaths { get; set; }
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

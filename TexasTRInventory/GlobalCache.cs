@@ -15,9 +15,8 @@ namespace TexasTRInventory
 {
     public static class GlobalCache
     {
-        private static NameValueCollection localConfig;
-        private static IConfiguration onlineConfig;
-        private static bool isOnline;
+        private static NameValueCollection secondConfig;
+        private static IConfiguration firstConfig;
         private static CloudBlobContainer BlobContainer;
         private static KeyVaultClient keyVaultClient;
         private static Dictionary<string, string> secrets;
@@ -27,24 +26,19 @@ namespace TexasTRInventory
             secrets = new Dictionary<string, string>();
             keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
         }
-
-
-        public static void Initialize(NameValueCollection config)
+        
+        public static void Initialize(IConfiguration firstConfigParam, NameValueCollection secondConfigParam)
         {
-            localConfig = config;
-            isOnline = false;
-        }
+            firstConfig = firstConfigParam;
+            secondConfig = secondConfigParam;
 
-        public static void Initialize(IConfiguration config)
-        {
-            onlineConfig = config;
-            isOnline = true;
         }
 
         //Will make this private later, and enforce that all access is done through fields.
         public static string Indexer(string key)
         {
-            return isOnline ? onlineConfig[key] : localConfig[key];
+            string possibleRet = firstConfig[key];
+            return !string.IsNullOrWhiteSpace(possibleRet) ? possibleRet : secondConfig[key];
         }
 
         static async public Task<String> GetSendGridKey()

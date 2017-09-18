@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace TexasTRInventory.Models.AccountViewModels
 {
-    public class RegisterViewModel
+    public class UserViewModel
     {
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        //TODO this is bullshit. There's another spot where we determine the length of the password
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        //[Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -24,5 +23,8 @@ namespace TexasTRInventory.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        //EXP 9.14.17. Just getting started on this. I have no idea what I'm doing.
+        public int? SupplierID { get; set; }
     }
 }

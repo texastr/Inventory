@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETFramework,Version=v4.5.2/win7-x86",
-    "signature": "12b51922dafd165fbbf3bdf6cb8136c46bbe4ed2"
+    "signature": "01091eb439244a218a5581e38182a7573fd1af14"
   },
   "compilationOptions": {
     "defines": [
@@ -35,7 +35,6 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "1.1.2",
           "Microsoft.EntityFrameworkCore.SqlServer.Design": "1.1.2",
           "Microsoft.EntityFrameworkCore.Tools": "1.1.1",
-          "Microsoft.Extensions.Configuration.UserSecrets": "1.1.2",
           "Microsoft.Extensions.Logging.Debug": "1.1.2",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.16.204221202",
           "Microsoft.VisualStudio.Web.BrowserLink": "1.1.2",
@@ -1267,15 +1266,6 @@
           "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
         }
       },
-      "microsoft.extensions.configuration.usersecrets/1.1.2": {
-        "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "1.1.2",
-          "NETStandard.Library": "1.6.1"
-        },
-        "compile": {
-          "lib/net451/Microsoft.Extensions.Configuration.UserSecrets.dll": {}
-        }
-      },
       "microsoft.extensions.dependencyinjection/1.1.1": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
@@ -1803,7 +1793,6 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "1.1.2",
           "Microsoft.EntityFrameworkCore.SqlServer.Design": "1.1.2",
           "Microsoft.EntityFrameworkCore.Tools": "1.1.1",
-          "Microsoft.Extensions.Configuration.UserSecrets": "1.1.2",
           "Microsoft.Extensions.Logging.Debug": "1.1.2",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.16.204221202",
           "Microsoft.VisualStudio.Web.BrowserLink": "1.1.2",
@@ -2768,15 +2757,6 @@
         },
         "runtime": {
           "lib/net451/Microsoft.Extensions.Configuration.Json.dll": {}
-        }
-      },
-      "microsoft.extensions.configuration.usersecrets/1.1.2": {
-        "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "1.1.2",
-          "NETStandard.Library": "1.6.1"
-        },
-        "runtime": {
-          "lib/net451/Microsoft.Extensions.Configuration.UserSecrets.dll": {}
         }
       },
       "microsoft.extensions.dependencyinjection/1.1.1": {
@@ -3914,13 +3894,6 @@
       "sha512": "sha512-ZDJulZ+K9Yai3YtAamk6hN3vneJAwZ+9cBmtJSND0C4PxX8jQSSTHAE3acG3qyubRJM9xbxG5JrVaLCGPxcrBg==",
       "path": "microsoft.extensions.configuration.json/1.1.2",
       "hashPath": "microsoft.extensions.configuration.json.1.1.2.nupkg.sha512"
-    },
-    "microsoft.extensions.configuration.usersecrets/1.1.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-YIy96i+3yxH/HjhX7eNy7lpWRhW2ZzaGyhSpYlg92iYX5BfHSmwUgXnKQ7T2zu3WC8UMlO+r8JwnqXtBsEXIoQ==",
-      "path": "microsoft.extensions.configuration.usersecrets/1.1.2",
-      "hashPath": "microsoft.extensions.configuration.usersecrets.1.1.2.nupkg.sha512"
     },
     "microsoft.extensions.dependencyinjection/1.1.1": {
       "type": "package",

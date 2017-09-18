@@ -16,24 +16,43 @@ using System.Windows.Forms;
 using Microsoft.Azure.KeyVault;
 using System.Web.Configuration;
 using System.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 namespace TexasTRInventory.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly InventoryContext _context;
-  
-        public ProductsController(InventoryContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        public ProductsController(InventoryContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
-            _context = context;    
+            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            await DbInitializer.Initialize(_context);
 
-            var inventoryContext = _context.Products.Include(p => p.Supplier);
+            //EXP 9.14.17 filtering out products that aren't from the user
+
+            //TexasTRInventory.Data.DbInitializer.TrashIntialize(_context);
+            IQueryable<Product> inventoryContext;
+            if (!this.User.IsInRole(Constants.Roles.InternalUser))
+            {
+                int? supplierID = Utils.SafeFindSupplierID(User);
+                supplierID = supplierID == null ? -1 : supplierID;
+
+                inventoryContext = _context.Products.Where(p => p.SupplierID == supplierID);
+            }
+            else
+            {
+                inventoryContext = _context.Products.Include(p => p.Supplier);
+            }
+
             return View(await inventoryContext.ToListAsync());
         }
 
@@ -59,7 +78,7 @@ namespace TexasTRInventory.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID");
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, nameof(Supplier.ID) , nameof(Supplier.Name));
             return View();
         }
         
@@ -132,7 +151,7 @@ namespace TexasTRInventory.Controllers
             {
                 return NotFound();
             }
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
+            ViewData["SupplierID"] = new SelectList(_context.Suppliers, nameof(Supplier.ID), nameof(Supplier.Name), product.SupplierID);
             return View(product);
         }
 

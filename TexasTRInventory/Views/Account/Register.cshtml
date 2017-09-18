@@ -1,5 +1,5 @@
 ﻿@using TexasTRInventory.Models.AccountViewModels
-@model RegisterViewModel
+@model UserViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -31,6 +31,14 @@
             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
         </div>
     </div>
+    <!--copied from the product's create page-->
+    <div class="form-group">
+        <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select asp-for="SupplierID" class="form-control" asp-items="ViewBag.SupplierID"></select>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-default">Register</button>

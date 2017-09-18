@@ -8,12 +8,16 @@ namespace TexasTRInventory.Models.AccountViewModels
 {
     public class ResetPasswordViewModel
     {
+
+        //EXP 9.15.17. don't really know what's up, but going to try to get UserId from URL, not from user
+        public string UserID { get; set; }
+
         [Required]
         [EmailAddress]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

@@ -17,6 +17,11 @@ namespace TexasTRInventory
             public static readonly string AdminUsername = "AdminUsername";
         }
 
+        public static class ClaimNames
+        {
+            public static readonly string Supplier = "Supplier";
+        }
+
         public static class Roles
         {
             public static readonly string Administrator = "Administrator";

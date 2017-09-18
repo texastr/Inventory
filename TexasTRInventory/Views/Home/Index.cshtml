@@ -1,8 +1,21 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+
 <h2>@ViewData["Title"].</h2>
 <h3>@ViewData["Message"]</h3>
+@if (Utils.IsInternalUser(User))
+        {
+    <p>you're an internal user!</p>
 
+}
+else
+{ 
+    <p>you're a supplier or something.</p>
+}
+
+@if (true)
+{<p>The bool was true</p>}
+<p>"I don't care if the bool was true"</p>
 <p>This is the homepage. There's nothing interesting here now.</p>
 <p>@ViewData["EXPTESTKEY"]</p>

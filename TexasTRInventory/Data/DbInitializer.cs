@@ -31,7 +31,7 @@ namespace TexasTRInventory.Data
                 //But trying to get the DI one in here is not worth the risk and difficulty
                 using (var userStore = new UserStore<ApplicationUser>(context))
                 {
-                    using (var userManager = new UserManager<ApplicationUser>(userStore,null,new PasswordHasher<ApplicationUser>(),null,null,null,null,null,null))
+                    using (var userManager = new UserManager<ApplicationUser>(userStore,null,new PasswordHasher<ApplicationUser>(),null,null,new UpperInvariantLookupNormalizer(),null,null,null))
                     {
                         string adminIdentifier = GlobalCache.Indexer(Constants.ConfigNames.AdminUsername);
                         ApplicationUser expUser = new ApplicationUser()

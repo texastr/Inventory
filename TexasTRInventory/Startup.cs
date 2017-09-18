@@ -17,6 +17,7 @@ using Microsoft.Azure.KeyVault;
 using System.Web.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TexasTRInventory
 {
@@ -39,15 +40,7 @@ namespace TexasTRInventory
             builder*/.AddEnvironmentVariables();
             Configuration = builder.Build();
 
-            //EXP 9.8.17. I hope this is the right spot
-            if(env.IsDevelopment())
-            {
-                GlobalCache.Initialize(WebConfigurationManager.AppSettings);
-            }
-            else
-            {
-                GlobalCache.Initialize(Configuration);
-            }
+            GlobalCache.Initialize(Configuration, WebConfigurationManager.AppSettings);
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -115,12 +108,19 @@ namespace TexasTRInventory
             services.AddScoped<IAuthorizationHandler, InternalUserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, ProductIsSuppliedAuthorizationHandler>();
 
+            //EXP 9.15.17 Don't understand, but apparently this is good for security
+            //https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl
+            //This depends on a package that I can't install, for the time being, commenting it out
+            /*services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });*/
+
         }
 
         //9.11.17 Making this async void. This is bad, but maybe we can get a heter because this is like an event handler?
-        //9.17.17 Now it's OK being async task? Deut. 29:29.
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async Task Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, InventoryContext context)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, InventoryContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -149,6 +149,13 @@ namespace TexasTRInventory
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+
+            //EXP 9.15.17 I should put this in for security, but it seems that I can't download the rewrite package
+            //https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl
+            /*var options = new RewriteOptions()
+               .AddRedirectToHttps();
+
+            app.UseRewriter(options);*/
 
             //EXP
             await DbInitializer.Initialize(context);

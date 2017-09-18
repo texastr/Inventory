@@ -9,8 +9,7 @@ namespace TexasTRInventory.Models.ManageViewModels
     public class SetPasswordViewModel
     {
         [Required]
-        //Again, there should be a single source of truth for password length. Maybe I'm misunderstand what this code is for?
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
@@ -19,5 +18,9 @@ namespace TexasTRInventory.Models.ManageViewModels
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        //EXP 9.15.17 putting this in, because people now do this "activity" (in the Epic sense) before logging in
+        public string UserID { get; set; }
+        public string Code { get; set; }
     }
 }
