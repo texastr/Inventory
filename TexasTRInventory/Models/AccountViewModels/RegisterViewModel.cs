@@ -13,7 +13,7 @@ namespace TexasTRInventory.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        //[Required]
+        /*        //[Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
@@ -25,10 +25,11 @@ namespace TexasTRInventory.Models
         public string ConfirmPassword { get; set; }
 
         public bool IsDisabled { get; set; }
-        public bool EmailConfirmed { get; set; }
+        public bool EmailConfirmed { get; set; } */
 
         //EXP 9.14.17. Just getting started on this. I have no idea what I'm doing.
         [Required]
         public int EmployerID { get; set; }
+
     }
 }

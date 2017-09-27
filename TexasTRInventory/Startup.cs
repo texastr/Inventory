@@ -109,9 +109,8 @@ namespace TexasTRInventory
 
             //EXP 9.11.17 https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data
             //Allows the authorization handlers to work
-            services.AddScoped<IAuthorizationHandler, AdministratorAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, InternalUserAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, ProductIsSuppliedAuthorizationHandler>();
+
 
             //EXP 9.20.17. I think the scopeds above are wrong. this is how to do it.
             //https://stackoverflow.com/questions/31464359/how-do-you-create-a-custom-authorizeattribute-in-asp-net-core

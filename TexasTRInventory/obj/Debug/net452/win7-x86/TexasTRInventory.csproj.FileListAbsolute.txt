@@ -313,4 +313,3 @@ C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRI
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.exe
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.pdb
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.AspNetCore.Rewrite.dll
-C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csprojResolveAssemblyReference.cache

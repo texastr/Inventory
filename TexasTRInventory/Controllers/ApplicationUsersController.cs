@@ -28,7 +28,7 @@ namespace TexasTRInventory.Controllers
         {
             _context = context;
             _userManager = userManager;
-            _logger = loggerFactory.CreateLogger<UsersAdminController>();
+            _logger = loggerFactory.CreateLogger<ApplicationUsersController>();
             _emailSender = emailSender;
         }
 
@@ -51,7 +51,7 @@ namespace TexasTRInventory.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployerID"] = Utils.CompanyList(_context, applicationUser.Employer, false);
+            ViewData["EmployerID"] = Utils.CompanyList(_context, applicationUser.Employer, false); //TODO I think I know why the employer isn't loading
             return View(applicationUser);
         }
 
@@ -60,21 +60,17 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("EmailConfirmed,IsDisabled,EmployerID")] ApplicationUser user)
+        public async Task<IActionResult> Edit(string id, [Bind("IsDisabled,EmployerID")] ApplicationUser user)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    //_context.Update(user);
-                    //await _context.SaveChangesAsync();
-                    //EXP 9.22.17 the above is the standard scaffolded code and throws a concurrency exceptions
+
                     ApplicationUser dbUser = await _userManager.FindByIdAsync(id);
                     dbUser.EmployerID = user.EmployerID;
-                    dbUser.EmailConfirmed = user.EmailConfirmed;
                     dbUser.IsDisabled = user.IsDisabled;
                     await _userManager.UpdateAsync(dbUser);
-                    //await _userManager.UpdateAsync(user);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -101,6 +97,8 @@ namespace TexasTRInventory.Controllers
             }
 
             var applicationUser = await _context.ApplicationUser
+                .AsNoTracking()
+                .Include(u => u.Employer)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
@@ -143,36 +141,16 @@ namespace TexasTRInventory.Controllers
                 var user = new ApplicationUser { UserName = model.Email,
                     Email = model.Email,
                     EmployerID = model.EmployerID,
-                    IsDisabled = model.IsDisabled,
-                    EmailConfirmed = model.EmailConfirmed
                 };
 
-                IdentityResult result; //EXP 9.15.17 We can now create users without passwords
-                if (String.IsNullOrWhiteSpace(model.Password))
-                {
-                    result = await _userManager.CreateAsync(user);
-                }
-                else
-                {
-                    result = await _userManager.CreateAsync(user, model.Password);
-                }
-
-
+                IdentityResult result = await _userManager.CreateAsync(user);
 
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //Line below came with the code. But I'll replace it with what's on the site
-                    var callbackUrl = Url.Action(nameof(AccountController.ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    //await _signInManager.SignInAsync(user, isPersistent: false); <=comment out so that users aren't logged in until they verify they're email address
+                    string msgBody = await EmailText(user);
+                    await _emailSender.SendEmailAsync(model.Email, "Welcome to Texas TR!",msgBody);
                     _logger.LogInformation(3, "User created a new account");
-
-
                     return RedirectToAction(nameof(Index));
 
                 }
@@ -182,6 +160,25 @@ namespace TexasTRInventory.Controllers
             // If we got this far, something failed, redisplay form
             //Must also repopulate the list of suppliers. Maybe I should refactor it to a different tag
             return View(model);
+        }
+
+        private async Task<string> EmailText(ApplicationUser user)
+        {
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string callbackUrl = Url.Action(nameof(ManageController.SetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            Company employer = await _context.Companies.FirstOrDefaultAsync(c => c.ID == user.EmployerID);
+
+            string explanation = employer.IsInternal ?
+                "An account has been created for you in our inventory management system." :
+                $"You have been invited to record and track which products {employer.Name} sells with Texas TR.";
+
+            string ret =
+                $"Hello!<br><br>{explanation}<br>" +
+                $"Please activate your account and set a password by clicking <a href='{callbackUrl}'>here</a>.<br><br>" +
+                "Once your account is active, you can access the inventory management system at " +
+                "<a href='https://texastrinventory.azurewebsites.net'>texastrinventory.azurewebsites.net</a>." +
+                "<br><br> Sincerely,<br>Texas TR";
+            return ret;
         }
 
 

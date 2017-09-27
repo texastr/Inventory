@@ -18,24 +18,18 @@ namespace TexasTRInventory.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        //private readonly string _externalCookieScheme;
         private readonly IEmailSender _emailSender;
-        //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
         public ManageController(
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
-          //IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
-          //ISmsSender smsSender,
           ILoggerFactory loggerFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            //_externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
-            //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<ManageController>();
         }
 
@@ -47,10 +41,7 @@ namespace TexasTRInventory.Controllers
             ViewData["StatusMessage"] =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                //: message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? "An error has occurred."
-                //: message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                //: message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
             var user = await GetCurrentUserAsync();
@@ -61,10 +52,6 @@ namespace TexasTRInventory.Controllers
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
-                //PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
-                //TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
-                //Logins = await _userManager.GetLoginsAsync(user),
-                //BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
             };
 
             return View(model);
@@ -105,13 +92,13 @@ namespace TexasTRInventory.Controllers
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 
-        //
+        //I think we only call the post
         // GET: /Manage/SetPassword
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult SetPassword()
         {
             return View();
-        }
+        }*/
 
         //
         // POST: /Manage/SetPassword
@@ -124,7 +111,6 @@ namespace TexasTRInventory.Controllers
             {
                 return View(model);
             }
-
             
             var user = await _userManager.FindByIdAsync(model.UserID);
             if (user != null)

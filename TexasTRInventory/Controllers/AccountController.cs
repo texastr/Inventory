@@ -112,7 +112,7 @@ namespace TexasTRInventory.Controllers
         }
 
                 
-        // GET: /Account/ConfirmEmail
+        /*// GET: /Account/ConfirmEmail
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
@@ -127,12 +127,8 @@ namespace TexasTRInventory.Controllers
             {
                 return View("Error");
             }
-            //var result = await _userManager.ConfirmEmailAsync(user, code);
-            //return View(result.Succeeded ? "ConfirmEmail" : "Error");
-            //EXP 9.15.17. Users don't have passwords when their account is being confirmed.
-            //TODO where really does SetPassword.cshtml belong?
-            return View("~/Views/Manage/SetPassword.cshtml");
-        }
+            return RedirectToAction(nameof(ManageController.SetPassword)); //This won't work.
+        }*/
 
         //
         // GET: /Account/ForgotPassword
