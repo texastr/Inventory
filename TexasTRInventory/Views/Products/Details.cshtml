@@ -2,16 +2,9 @@
 
 @{
     ViewData["Title"] = "Details";
-}
 
-@{ 
     //9.6.17 the below is not generated automatically
-    string imageURL = "";
-    if (Model.ImageFilePath != null && !String.IsNullOrEmpty(Model.ImageFilePath.FileName))
-    {
-        //EXP 9.6.17. needs a try catch
-        imageURL = (await TexasTRInventory.GlobalCache.GetBlob(Model.ImageFilePath.FileName)).Uri.AbsoluteUri;
-    }
+    string imageURL = await Utils.GetImageURL(Model);
 }
 
 <h2>Details</h2>
@@ -21,10 +14,18 @@
     <hr />
     <dl class="dl-horizontal">
         @*EXP 9.6.17 the below is not generated automatically*@
-        <dt> EXP Photo of Product</dt>
+        <dt>Photo of Product</dt>
         <dd>
-            <!--TODO put in a decent alternative whene there is no image-->
-            <img style="max-height:500px;max-width:500px" src=@imageURL>
+            @if (imageURL != "")
+            {
+                <img style="max-height:500px;max-width:500px" src=@imageURL />
+            }
+            else
+            {
+                <text>No Image found</text>
+
+            }
+
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.SKU)

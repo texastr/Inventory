@@ -33,7 +33,7 @@ namespace TexasTRInventory.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("alexander@texastr.com", "The name is hardcoded!"),
+                From = GlobalCache.GetSystemEmailAddress(),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

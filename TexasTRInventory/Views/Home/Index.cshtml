@@ -1,21 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Identity
+@using TexasTRInventory.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<h2>Texas TR Inventory Mangement</h2>
+@if (!SignInManager.IsSignedIn(User))
+{
+    <p>If you are a supplier, your Texas TR representative will provide you with login credentials.</p>
+    <p>Learn more at <a href="http://www.texastr.com">TexasTR.com</a></p>
 }
-
-<h2>@ViewData["Title"].</h2>
-<h3>@ViewData["Message"]</h3>
-@if (Utils.IsInternalUser(User))
-        {
-    <p>you're an internal user!</p>
-
+else if (Utils.IsInternalUser(User))
+{
+    <p>You're a Texas TR employee!</p>
 }
 else
-{ 
-    <p>you're a supplier or something.</p>
+{
+    <p>Use this system to view or update your product list.</p>
 }
 
-@if (true)
-{<p>The bool was true</p>}
-<p>"I don't care if the bool was true"</p>
-<p>This is the homepage. There's nothing interesting here now.</p>
-<p>@ViewData["EXPTESTKEY"]</p>
+<img src="~/images/HomePageImage.jpg" alt="A well-managed inventory" />

@@ -9,29 +9,26 @@ namespace TexasTRInventory
     {
         public static class SecretNames
         {
-            public static readonly string AdminInitializer = "AdminInitializer";
+            public const string AdminInitializer = "AdminInitializer";
         }
 
-        public static class ConfigNames
+        public static class ClaimTypes
         {
-            public static readonly string AdminUsername = "AdminUsername";
+            public const string IsInternal = "IsInternal";
+            public const string EmployerID = "EmployerID";
         }
 
-        public static class ClaimNames
+        public static class PolicyNames
         {
-            public static readonly string Supplier = "Supplier";
+            public const string IsInternal = "IsInternal";
         }
-
-        public static class Roles
+        
+        public static class KeyNames
         {
-            public static readonly string Administrator = "Administrator";
-            public static readonly string InternalUser = "InternalUser";
-            public static readonly string Supplier = "Supplier";
-
-            public static string[] ToArray() {
-                string[] ret =  { Administrator, InternalUser, Supplier};
-                return ret;
-            }
+            public const string ErrorDetails = "ErrorDetails";
+            public const string SupplierID = "SupplierID";
         }
+
+        public const string TexasTRCompanyName = "Texas TR";
     }
 }

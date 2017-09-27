@@ -19,7 +19,7 @@
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse"> @*EXP 9.25.17 deleting navbar fixed top after conferring with YMP*@
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -28,17 +28,19 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">TexasTR Inventory Management System</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Texas TR Inventory Management System</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    <!--EXP now the buttons I'm adding-->
+                    @*EXP now the buttons I'm adding*@
                     <li><a asp-area="" asp-controller="Products" asp-action="Index">Products</a></li>
-                    <li><a asp-area="" asp-controller="Suppliers" asp-action="Index">Suppliers</a></li>
-                    <li><a asp-area="" asp-controller="ApplicationUsers" asp-action="Index">Users</a></li>
+                    @*EXP 9.18.17 Buttons visiable only to internals*@
+                    @if (Utils.IsInternalUser(User))
+                    {
+                        <li><a asp-area="" asp-controller="Companies" asp-action="Index">Companies</a></li>
+                        <li><a asp-area="" asp-controller="ApplicationUsers" asp-action="Index">Users</a></li>
+                    }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -48,7 +50,11 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>Created by Alexander Posner, exclusively for Texas TR</p>
+            <p>
+                <small>
+                    &copy; 2017 Texas TR <a href="http://www.texastr.com">TexasTR.com</a>
+                </small>
+            </p>
         </footer>
     </div>
 

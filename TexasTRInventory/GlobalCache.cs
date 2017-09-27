@@ -5,11 +5,13 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using TexasTRInventory.Data;
 
 namespace TexasTRInventory
 {
@@ -18,6 +20,7 @@ namespace TexasTRInventory
         private static NameValueCollection secondConfig;
         private static IConfiguration firstConfig;
         private static CloudBlobContainer BlobContainer;
+        private static int? TexasTRCompanyID;
         private static KeyVaultClient keyVaultClient;
         private static Dictionary<string, string> secrets;
         
@@ -34,16 +37,41 @@ namespace TexasTRInventory
 
         }
 
-        //Will make this private later, and enforce that all access is done through fields.
-        public static string Indexer(string key)
+        private static string Indexer(string key)
         {
             string possibleRet = firstConfig[key];
             return !string.IsNullOrWhiteSpace(possibleRet) ? possibleRet : secondConfig[key];
         }
 
+        public static EmailAddress GetSystemEmailAddress()
+        {
+            return new EmailAddress(Indexer("EmailSenderAddress"), Indexer("EmailSenderName"));
+        }
+
+        public static string GetAdminUsername()
+        {
+            return Indexer("AdminUsername");
+        }
+
         static async public Task<String> GetSendGridKey()
         {
             return await GetSecret("SendGridKey");
+        }
+
+        public static bool IsDevelopment()
+        {
+            return Indexer("ASPNETCORE_ENVIRONMENT") == "Development";
+        }
+
+        static public int GetTexasTRCompanyID(InventoryContext context)
+        {
+            if(TexasTRCompanyID == null)
+            {
+                TexasTRCompanyID = context.Companies.Where(s => s.IsInternal)
+                    .First().ID;
+            }
+            //TODO will this crash if the database is corrupted and no supplier is returned?
+            return (int)TexasTRCompanyID;
         }
 
         static async public Task<CloudBlockBlob> GetBlob(string fileName)

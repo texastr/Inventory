@@ -18,6 +18,7 @@ using System.Web.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace TexasTRInventory
 {
@@ -58,6 +59,7 @@ namespace TexasTRInventory
                 .AddEntityFrameworkStores<InventoryContext>()
                 .AddDefaultTokenProviders();
 
+            
             services.AddMvc(config => //EXP 9.11. from https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -93,6 +95,9 @@ namespace TexasTRInventory
                 // User settings
                 options.User.RequireUniqueEmail = true;
             });
+            
+            //EXP 9.20.17 Hopefully this does the magic to make ApplicationUser.EmployerID map to a claim
+            services.AddScoped<Microsoft.AspNetCore.Identity.IUserClaimsPrincipalFactory<ApplicationUser>, AppClaimsPrincipalFactory>();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -108,13 +113,23 @@ namespace TexasTRInventory
             services.AddScoped<IAuthorizationHandler, InternalUserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, ProductIsSuppliedAuthorizationHandler>();
 
+            //EXP 9.20.17. I think the scopeds above are wrong. this is how to do it.
+            //https://stackoverflow.com/questions/31464359/how-do-you-create-a-custom-authorizeattribute-in-asp-net-core
+            services.Configure<AuthorizationOptions>(options =>
+            {
+                options.AddPolicy(Constants.PolicyNames.IsInternal, policy => policy.Requirements.Add(new InternalUserAuthorizationHandler()));
+            });
+
             //EXP 9.15.17 Don't understand, but apparently this is good for security
             //https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl
-            //This depends on a package that I can't install, for the time being, commenting it out
-            /*services.Configure<MvcOptions>(options =>
+            if (!GlobalCache.IsDevelopment())
             {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });*/
+                services.Configure<MvcOptions>(options =>
+                    {
+                        options.Filters.Add(new RequireHttpsAttribute());
+                    }
+                 );
+            }
 
         }
 
@@ -152,10 +167,13 @@ namespace TexasTRInventory
 
             //EXP 9.15.17 I should put this in for security, but it seems that I can't download the rewrite package
             //https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl
-            /*var options = new RewriteOptions()
-               .AddRedirectToHttps();
+            if (!GlobalCache.IsDevelopment())
+            {
+                var options = new RewriteOptions()
+                   .AddRedirectToHttps();
 
-            app.UseRewriter(options);*/
+                app.UseRewriter(options);
+            }
 
             //EXP
             await DbInitializer.Initialize(context);

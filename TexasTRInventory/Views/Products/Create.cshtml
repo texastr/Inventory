@@ -14,17 +14,20 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <!--adding in the vollowing div-->
         <div class="form-group">
-            @Html.Label("EXP product image","this is the label text which the tutorial didn't include", new{@class = "control-label col-md-2"})
+            @Html.Label("EXP This doesn't matter","Product Image", new{@class = "control-label col-md-2"})
            <div class="col-md-10">
                <input type="file" id="Photo" name="upload" />
            </div>
         </div>
-        <div class="form-group">
-            <label asp-for="SupplierID" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="SupplierID" class ="form-control" asp-items="ViewBag.SupplierID"></select>
+        @if (Utils.IsInternalUser(User))
+        {
+            <div class="form-group">
+                <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="SupplierID" class ="form-control" asp-items="ViewBag.SupplierID"></select>
+                </div>
             </div>
-        </div>
+        }
         <div class="form-group">
             <label asp-for="SKU" class="col-md-2 control-label"></label>
             <div class="col-md-10">

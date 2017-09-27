@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETFramework,Version=v4.5.2/win7-x86",
-    "signature": "01091eb439244a218a5581e38182a7573fd1af14"
+    "signature": "bdf867859f6173acac3038e63702771549513e93"
   },
   "compilationOptions": {
     "defines": [
@@ -23,12 +23,15 @@
     ".NETFramework,Version=v4.5.2": {
       "texastrinventory/1.0.0": {
         "dependencies": {
+          "BuildBundlerMinifier": "2.5.357",
           "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",
+          "Microsoft.AspNet.Identity.Samples": "2.1.0-alpha1",
           "Microsoft.AspNetCore": "1.1.2",
           "Microsoft.AspNetCore.Authentication.Cookies": "1.1.2",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.1.2",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.2",
           "Microsoft.AspNetCore.Mvc": "1.1.3",
+          "Microsoft.AspNetCore.Rewrite": "1.0.3",
           "Microsoft.AspNetCore.StaticFiles": "1.1.2",
           "Microsoft.Azure.KeyVault": "2.3.2",
           "Microsoft.EntityFrameworkCore.Design": "1.1.2",
@@ -109,6 +112,11 @@
       "system.net.http/4.0.0.0": {
         "compile": {
           ".NETFramework/v4.5.2/System.Net.Http.dll": {}
+        }
+      },
+      "system.net.http.webrequest/4.0.0.0": {
+        "compile": {
+          ".NETFramework/v4.5.2/System.Net.Http.WebRequest.dll": {}
         }
       },
       "system.numerics/4.0.0.0": {
@@ -401,6 +409,29 @@
           ".NETFramework/v4.5.2/Facades/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "antlr/3.4.1.9004": {
+        "compile": {
+          "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "bootstrap/3.0.0": {
+        "dependencies": {
+          "jQuery": "1.10.2"
+        }
+      },
+      "buildbundlerminifier/2.5.357": {},
+      "entityframework/6.1.0": {
+        "compile": {
+          "lib/net45/EntityFramework.SqlServer.dll": {},
+          "lib/net45/EntityFramework.dll": {}
+        }
+      },
+      "jquery/1.10.2": {},
+      "jquery.validation/1.11.1": {
+        "dependencies": {
+          "jQuery": "1.10.2"
+        }
+      },
       "libuv/1.9.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
@@ -455,6 +486,89 @@
         },
         "compile": {
           "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.core/2.1.0-alpha1": {
+        "compile": {
+          "lib/net45/Microsoft.AspNet.Identity.Core.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.entityframework/2.1.0-alpha1": {
+        "dependencies": {
+          "EntityFramework": "6.1.0",
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1"
+        },
+        "compile": {
+          "lib/net45/Microsoft.AspNet.Identity.EntityFramework.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.owin/2.1.0-alpha1": {
+        "dependencies": {
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin.Security.Cookies": "2.1.0",
+          "Microsoft.Owin.Security.OAuth": "2.1.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.AspNet.Identity.Owin.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.samples/2.1.0-alpha1": {
+        "dependencies": {
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1",
+          "Microsoft.AspNet.Identity.EntityFramework": "2.1.0-alpha1",
+          "Microsoft.AspNet.Identity.Owin": "2.1.0-alpha1",
+          "Microsoft.AspNet.Mvc": "5.1.1",
+          "Microsoft.AspNet.Web.Optimization": "1.1.3",
+          "Microsoft.Owin.Host.SystemWeb": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin.Security.Cookies": "2.1.0",
+          "Microsoft.Owin.Security.Facebook": "2.1.0",
+          "Microsoft.Owin.Security.Google": "2.1.0",
+          "Microsoft.Owin.Security.MicrosoftAccount": "2.1.0",
+          "Microsoft.Owin.Security.Twitter": "2.1.0",
+          "Microsoft.jQuery.Unobtrusive.Validation": "3.1.1",
+          "Modernizr": "2.6.2",
+          "Newtonsoft.Json": "9.0.1",
+          "Respond": "1.2.0",
+          "bootstrap": "3.0.0",
+          "jQuery": "1.10.2",
+          "jQuery.Validation": "1.11.1"
+        }
+      },
+      "microsoft.aspnet.mvc/5.1.1": {
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "3.1.1",
+          "Microsoft.AspNet.WebPages": "3.1.1"
+        },
+        "compile": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        }
+      },
+      "microsoft.aspnet.razor/3.1.1": {
+        "compile": {
+          "lib/net45/System.Web.Razor.dll": {}
+        }
+      },
+      "microsoft.aspnet.web.optimization/1.1.3": {
+        "dependencies": {
+          "Microsoft.Web.Infrastructure": "1.0.0",
+          "WebGrease": "1.5.2"
+        },
+        "compile": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        }
+      },
+      "microsoft.aspnet.webpages/3.1.1": {
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "3.1.1",
+          "Microsoft.Web.Infrastructure": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
         }
       },
       "microsoft.aspnetcore/1.1.2": {
@@ -554,7 +668,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Cryptography.Internal": "1.1.2",
           "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
           "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
           "Microsoft.Extensions.Options": "1.1.2",
@@ -575,7 +689,7 @@
       "microsoft.aspnetcore.diagnostics/1.1.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Diagnostics.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.AspNetCore.WebUtilities": "1.1.2",
           "Microsoft.Extensions.FileProviders.Physical": "1.1.1",
@@ -609,8 +723,8 @@
       },
       "microsoft.aspnetcore.hosting/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.Configuration": "1.1.2",
@@ -628,9 +742,9 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.dll": {}
         }
       },
-      "microsoft.aspnetcore.hosting.abstractions/1.1.2": {
+      "microsoft.aspnetcore.hosting.abstractions/1.1.3": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
@@ -642,7 +756,7 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.dll": {}
         }
       },
-      "microsoft.aspnetcore.hosting.server.abstractions/1.1.2": {
+      "microsoft.aspnetcore.hosting.server.abstractions/1.1.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
@@ -722,7 +836,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.Cookies": "1.1.2",
           "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "NETStandard.Library": "1.6.1"
         },
         "compile": {
@@ -800,7 +914,7 @@
       "microsoft.aspnetcore.mvc.core/1.1.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Authorization": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.ResponseCaching.Abstractions": "1.1.2",
@@ -938,6 +1052,20 @@
           "lib/net451/Microsoft.AspNetCore.ResponseCaching.Abstractions.dll": {}
         }
       },
+      "microsoft.aspnetcore.rewrite/1.0.3": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
+          "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
+          "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
+          "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
+          "Microsoft.Extensions.Options": "1.1.2",
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
+        }
+      },
       "microsoft.aspnetcore.routing/1.1.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
@@ -962,7 +1090,7 @@
       },
       "microsoft.aspnetcore.server.iisintegration/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.AspNetCore.HttpOverrides": "1.1.2",
@@ -990,7 +1118,7 @@
       },
       "microsoft.aspnetcore.staticfiles/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
           "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
@@ -1132,7 +1260,7 @@
       },
       "microsoft.entityframeworkcore.design/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.2",
           "NETStandard.Library": "1.6.1"
         },
@@ -1354,7 +1482,7 @@
       },
       "microsoft.extensions.localization/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
           "Microsoft.Extensions.Localization.Abstractions": "1.1.2",
           "Microsoft.Extensions.Options": "1.1.2",
@@ -1475,6 +1603,12 @@
           "lib/net45/Microsoft.IdentityModel.Clients.ActiveDirectory.dll": {}
         }
       },
+      "microsoft.jquery.unobtrusive.validation/3.1.1": {
+        "dependencies": {
+          "jQuery": "1.10.2",
+          "jQuery.Validation": "1.11.1"
+        }
+      },
       "microsoft.net.http.headers/1.1.2": {
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.1",
@@ -1487,6 +1621,97 @@
         }
       },
       "microsoft.netcore.platforms/1.1.0": {},
+      "microsoft.owin/2.1.0": {
+        "dependencies": {
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.dll": {}
+        }
+      },
+      "microsoft.owin.host.systemweb/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Host.SystemWeb.dll": {}
+        }
+      },
+      "microsoft.owin.security/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.dll": {}
+        }
+      },
+      "microsoft.owin.security.cookies/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.Cookies.dll": {}
+        }
+      },
+      "microsoft.owin.security.facebook/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.Facebook.dll": {}
+        }
+      },
+      "microsoft.owin.security.google/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.Google.dll": {}
+        }
+      },
+      "microsoft.owin.security.microsoftaccount/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.MicrosoftAccount.dll": {}
+        }
+      },
+      "microsoft.owin.security.oauth/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.OAuth.dll": {}
+        }
+      },
+      "microsoft.owin.security.twitter/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "compile": {
+          "lib/net45/Microsoft.Owin.Security.Twitter.dll": {}
+        }
+      },
       "microsoft.rest.clientruntime/2.3.8": {
         "dependencies": {
           "Newtonsoft.Json": "9.0.1"
@@ -1506,7 +1731,7 @@
       },
       "microsoft.visualstudio.web.browserlink/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.FileProviders.Physical": "1.1.1"
@@ -1586,6 +1811,12 @@
           "lib/net451/Microsoft.VisualStudio.Web.CodeGenerators.Mvc.dll": {}
         }
       },
+      "microsoft.web.infrastructure/1.0.0": {
+        "compile": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        }
+      },
+      "modernizr/2.6.2": {},
       "netstandard.library/1.6.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -1631,6 +1862,11 @@
           "lib/net45/NuGet.Frameworks.dll": {}
         }
       },
+      "owin/1.0.0": {
+        "compile": {
+          "lib/net40/Owin.dll": {}
+        }
+      },
       "remotion.linq/2.1.1": {
         "dependencies": {
           "System.Collections": "4.3.0",
@@ -1649,6 +1885,7 @@
           "lib/net45/Remotion.Linq.dll": {}
         }
       },
+      "respond/1.2.0": {},
       "sendgrid/9.9.0": {
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -1766,6 +2003,15 @@
       "system.threading.timer/4.3.0": {},
       "system.xml.readerwriter/4.3.0": {},
       "system.xml.xdocument/4.3.0": {},
+      "webgrease/1.5.2": {
+        "dependencies": {
+          "Antlr": "3.4.1.9004",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "compile": {
+          "lib/WebGrease.dll": {}
+        }
+      },
       "windowsazure.storage/8.4.0": {
         "dependencies": {
           "Microsoft.Azure.KeyVault.Core": "1.0.0",
@@ -1781,12 +2027,15 @@
     ".NETFramework,Version=v4.5.2/win7-x86": {
       "texastrinventory/1.0.0": {
         "dependencies": {
+          "BuildBundlerMinifier": "2.5.357",
           "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",
+          "Microsoft.AspNet.Identity.Samples": "2.1.0-alpha1",
           "Microsoft.AspNetCore": "1.1.2",
           "Microsoft.AspNetCore.Authentication.Cookies": "1.1.2",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.1.2",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.2",
           "Microsoft.AspNetCore.Mvc": "1.1.3",
+          "Microsoft.AspNetCore.Rewrite": "1.0.3",
           "Microsoft.AspNetCore.StaticFiles": "1.1.2",
           "Microsoft.Azure.KeyVault": "2.3.2",
           "Microsoft.EntityFrameworkCore.Design": "1.1.2",
@@ -1802,6 +2051,29 @@
         },
         "runtime": {
           "TexasTRInventory.exe": {}
+        }
+      },
+      "antlr/3.4.1.9004": {
+        "runtime": {
+          "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "bootstrap/3.0.0": {
+        "dependencies": {
+          "jQuery": "1.10.2"
+        }
+      },
+      "buildbundlerminifier/2.5.357": {},
+      "entityframework/6.1.0": {
+        "runtime": {
+          "lib/net45/EntityFramework.SqlServer.dll": {},
+          "lib/net45/EntityFramework.dll": {}
+        }
+      },
+      "jquery/1.10.2": {},
+      "jquery.validation/1.11.1": {
+        "dependencies": {
+          "jQuery": "1.10.2"
         }
       },
       "libuv/1.9.1": {
@@ -1861,6 +2133,89 @@
         },
         "runtime": {
           "lib/net45/Microsoft.AI.ServerTelemetryChannel.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.core/2.1.0-alpha1": {
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.Identity.Core.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.entityframework/2.1.0-alpha1": {
+        "dependencies": {
+          "EntityFramework": "6.1.0",
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.Identity.EntityFramework.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.owin/2.1.0-alpha1": {
+        "dependencies": {
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin.Security.Cookies": "2.1.0",
+          "Microsoft.Owin.Security.OAuth": "2.1.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.Identity.Owin.dll": {}
+        }
+      },
+      "microsoft.aspnet.identity.samples/2.1.0-alpha1": {
+        "dependencies": {
+          "Microsoft.AspNet.Identity.Core": "2.1.0-alpha1",
+          "Microsoft.AspNet.Identity.EntityFramework": "2.1.0-alpha1",
+          "Microsoft.AspNet.Identity.Owin": "2.1.0-alpha1",
+          "Microsoft.AspNet.Mvc": "5.1.1",
+          "Microsoft.AspNet.Web.Optimization": "1.1.3",
+          "Microsoft.Owin.Host.SystemWeb": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Microsoft.Owin.Security.Cookies": "2.1.0",
+          "Microsoft.Owin.Security.Facebook": "2.1.0",
+          "Microsoft.Owin.Security.Google": "2.1.0",
+          "Microsoft.Owin.Security.MicrosoftAccount": "2.1.0",
+          "Microsoft.Owin.Security.Twitter": "2.1.0",
+          "Microsoft.jQuery.Unobtrusive.Validation": "3.1.1",
+          "Modernizr": "2.6.2",
+          "Newtonsoft.Json": "9.0.1",
+          "Respond": "1.2.0",
+          "bootstrap": "3.0.0",
+          "jQuery": "1.10.2",
+          "jQuery.Validation": "1.11.1"
+        }
+      },
+      "microsoft.aspnet.mvc/5.1.1": {
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "3.1.1",
+          "Microsoft.AspNet.WebPages": "3.1.1"
+        },
+        "runtime": {
+          "lib/net45/System.Web.Mvc.dll": {}
+        }
+      },
+      "microsoft.aspnet.razor/3.1.1": {
+        "runtime": {
+          "lib/net45/System.Web.Razor.dll": {}
+        }
+      },
+      "microsoft.aspnet.web.optimization/1.1.3": {
+        "dependencies": {
+          "Microsoft.Web.Infrastructure": "1.0.0",
+          "WebGrease": "1.5.2"
+        },
+        "runtime": {
+          "lib/net40/System.Web.Optimization.dll": {}
+        }
+      },
+      "microsoft.aspnet.webpages/3.1.1": {
+        "dependencies": {
+          "Microsoft.AspNet.Razor": "3.1.1",
+          "Microsoft.Web.Infrastructure": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/System.Web.Helpers.dll": {},
+          "lib/net45/System.Web.WebPages.Deployment.dll": {},
+          "lib/net45/System.Web.WebPages.Razor.dll": {},
+          "lib/net45/System.Web.WebPages.dll": {}
         }
       },
       "microsoft.aspnetcore/1.1.2": {
@@ -1960,7 +2315,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Cryptography.Internal": "1.1.2",
           "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
           "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
           "Microsoft.Extensions.Options": "1.1.2",
@@ -1981,7 +2336,7 @@
       "microsoft.aspnetcore.diagnostics/1.1.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Diagnostics.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.AspNetCore.WebUtilities": "1.1.2",
           "Microsoft.Extensions.FileProviders.Physical": "1.1.1",
@@ -2015,8 +2370,8 @@
       },
       "microsoft.aspnetcore.hosting/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.Configuration": "1.1.2",
@@ -2034,9 +2389,9 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.dll": {}
         }
       },
-      "microsoft.aspnetcore.hosting.abstractions/1.1.2": {
+      "microsoft.aspnetcore.hosting.abstractions/1.1.3": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
@@ -2048,7 +2403,7 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.dll": {}
         }
       },
-      "microsoft.aspnetcore.hosting.server.abstractions/1.1.2": {
+      "microsoft.aspnetcore.hosting.server.abstractions/1.1.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
@@ -2128,7 +2483,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.Cookies": "1.1.2",
           "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "NETStandard.Library": "1.6.1"
         },
         "runtime": {
@@ -2206,7 +2561,7 @@
       "microsoft.aspnetcore.mvc.core/1.1.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Authorization": "1.1.2",
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.ResponseCaching.Abstractions": "1.1.2",
@@ -2344,6 +2699,20 @@
           "lib/net451/Microsoft.AspNetCore.ResponseCaching.Abstractions.dll": {}
         }
       },
+      "microsoft.aspnetcore.rewrite/1.0.3": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
+          "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
+          "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
+          "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
+          "Microsoft.Extensions.Options": "1.1.2",
+          "NETStandard.Library": "1.6.1"
+        },
+        "runtime": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
+        }
+      },
       "microsoft.aspnetcore.routing/1.1.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
@@ -2368,7 +2737,7 @@
       },
       "microsoft.aspnetcore.server.iisintegration/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.AspNetCore.HttpOverrides": "1.1.2",
@@ -2396,7 +2765,7 @@
       },
       "microsoft.aspnetcore.staticfiles/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
           "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
@@ -2625,7 +2994,7 @@
       },
       "microsoft.entityframeworkcore.design/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.2",
           "NETStandard.Library": "1.6.1"
         },
@@ -2847,7 +3216,7 @@
       },
       "microsoft.extensions.localization/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
           "Microsoft.Extensions.Localization.Abstractions": "1.1.2",
           "Microsoft.Extensions.Options": "1.1.2",
@@ -2968,6 +3337,12 @@
           "lib/net45/Microsoft.IdentityModel.Clients.ActiveDirectory.dll": {}
         }
       },
+      "microsoft.jquery.unobtrusive.validation/3.1.1": {
+        "dependencies": {
+          "jQuery": "1.10.2",
+          "jQuery.Validation": "1.11.1"
+        }
+      },
       "microsoft.net.http.headers/1.1.2": {
         "dependencies": {
           "Microsoft.Extensions.Primitives": "1.1.1",
@@ -2980,6 +3355,97 @@
         }
       },
       "microsoft.netcore.platforms/1.1.0": {},
+      "microsoft.owin/2.1.0": {
+        "dependencies": {
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.dll": {}
+        }
+      },
+      "microsoft.owin.host.systemweb/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Host.SystemWeb.dll": {}
+        }
+      },
+      "microsoft.owin.security/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.dll": {}
+        }
+      },
+      "microsoft.owin.security.cookies/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.Cookies.dll": {}
+        }
+      },
+      "microsoft.owin.security.facebook/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.Facebook.dll": {}
+        }
+      },
+      "microsoft.owin.security.google/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.Google.dll": {}
+        }
+      },
+      "microsoft.owin.security.microsoftaccount/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.MicrosoftAccount.dll": {}
+        }
+      },
+      "microsoft.owin.security.oauth/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.OAuth.dll": {}
+        }
+      },
+      "microsoft.owin.security.twitter/2.1.0": {
+        "dependencies": {
+          "Microsoft.Owin": "2.1.0",
+          "Microsoft.Owin.Security": "2.1.0",
+          "Newtonsoft.Json": "9.0.1",
+          "Owin": "1.0.0"
+        },
+        "runtime": {
+          "lib/net45/Microsoft.Owin.Security.Twitter.dll": {}
+        }
+      },
       "microsoft.rest.clientruntime/2.3.8": {
         "dependencies": {
           "Newtonsoft.Json": "9.0.1"
@@ -2999,7 +3465,7 @@
       },
       "microsoft.visualstudio.web.browserlink/1.1.2": {
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
           "Microsoft.Extensions.FileProviders.Physical": "1.1.1"
@@ -3079,6 +3545,12 @@
           "lib/net451/Microsoft.VisualStudio.Web.CodeGenerators.Mvc.dll": {}
         }
       },
+      "microsoft.web.infrastructure/1.0.0": {
+        "runtime": {
+          "lib/net40/Microsoft.Web.Infrastructure.dll": {}
+        }
+      },
+      "modernizr/2.6.2": {},
       "netstandard.library/1.6.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -3124,6 +3596,11 @@
           "lib/net45/NuGet.Frameworks.dll": {}
         }
       },
+      "owin/1.0.0": {
+        "runtime": {
+          "lib/net40/Owin.dll": {}
+        }
+      },
       "remotion.linq/2.1.1": {
         "dependencies": {
           "System.Collections": "4.3.0",
@@ -3142,6 +3619,7 @@
           "lib/net45/Remotion.Linq.dll": {}
         }
       },
+      "respond/1.2.0": {},
       "sendgrid/9.9.0": {
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -3288,6 +3766,15 @@
       "system.threading.timer/4.3.0": {},
       "system.xml.readerwriter/4.3.0": {},
       "system.xml.xdocument/4.3.0": {},
+      "webgrease/1.5.2": {
+        "dependencies": {
+          "Antlr": "3.4.1.9004",
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "runtime": {
+          "lib/WebGrease.dll": {}
+        }
+      },
       "windowsazure.storage/8.4.0": {
         "dependencies": {
           "Microsoft.Azure.KeyVault.Core": "1.0.0",
@@ -3306,6 +3793,48 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "antlr/3.4.1.9004": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-c1S+HBE+KYA5EBxtn25LEK02hHPH/tDQ6RviUTTCJpZIPoputtn8ArsQJy9lVJWZOnw37ufByO2Fmf1M8wpr8Q==",
+      "path": "antlr/3.4.1.9004",
+      "hashPath": "antlr.3.4.1.9004.nupkg.sha512"
+    },
+    "bootstrap/3.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-d1JUd1ZjfbhGGTxjBSjCLIV+O//hZDcvI0hnaeTL3VHAD+6Z89vgPwV0K/nmPM4hZKq172iPV55lCSpohT6WmA==",
+      "path": "bootstrap/3.0.0",
+      "hashPath": "bootstrap.3.0.0.nupkg.sha512"
+    },
+    "buildbundlerminifier/2.5.357": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kE/it+aN0DNmttXFYJSyBPGgzq4D4xg7W3KgRo917VP/wDb5bzH45u996pUrdoe9Zi54TGIS0Y3PEa42wvld2w==",
+      "path": "buildbundlerminifier/2.5.357",
+      "hashPath": "buildbundlerminifier.2.5.357.nupkg.sha512"
+    },
+    "entityframework/6.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-u/M0OEfqxTUsL5BwzD66eBGm278/ozqdLK3JvMO6QwUxxc+z7ZUkTYm4suDhWRqzkc6mOhvXDQY5dZUwbldxyQ==",
+      "path": "entityframework/6.1.0",
+      "hashPath": "entityframework.6.1.0.nupkg.sha512"
+    },
+    "jquery/1.10.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uPspgAZqsXYOwLW+Kf3uRxdFAyX1EiEd6AWJhCsnZNVsUJmEbsZSxA0P+ku6oAhHI682TOSwkbmmJPwFgdY5cA==",
+      "path": "jquery/1.10.2",
+      "hashPath": "jquery.1.10.2.nupkg.sha512"
+    },
+    "jquery.validation/1.11.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TlWrjoK3vlKtlSoUfAqbG5Q3FLppT7D/Z+yH/OkymuxnYedIOVuymPwstDxD2XXePwiLOrpS2R/SvSw2kgHHNA==",
+      "path": "jquery.validation/1.11.1",
+      "hashPath": "jquery.validation.1.11.1.nupkg.sha512"
     },
     "libuv/1.9.1": {
       "type": "package",
@@ -3355,6 +3884,62 @@
       "sha512": "sha512-PeOgoB990hkAisiHAIFDNc7SknArx+z9Mc0tVnE4iDdfDCrboqQhL5dyFVwtH8ef/EJu2iJLKIgkPDusdAh00w==",
       "path": "microsoft.applicationinsights.windowsserver.telemetrychannel/2.2.0",
       "hashPath": "microsoft.applicationinsights.windowsserver.telemetrychannel.2.2.0.nupkg.sha512"
+    },
+    "microsoft.aspnet.identity.core/2.1.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Y6nG9MKCDArA3wIUhbtXl8kMIaKIoudPqrkWanYwHaTV7g7uqCVaXkkA3EThz1YAEi2c76AP9RglIysKpCl3EQ==",
+      "path": "microsoft.aspnet.identity.core/2.1.0-alpha1",
+      "hashPath": "microsoft.aspnet.identity.core.2.1.0-alpha1.nupkg.sha512"
+    },
+    "microsoft.aspnet.identity.entityframework/2.1.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/vt2ucFnPcaLpeFMoTc5/WWBQsxhIP5j1ntiUIhfa1qnETMVNnvT3Es0Hc0i4s1kqmGKA3gpTHlclAGPBwyp3A==",
+      "path": "microsoft.aspnet.identity.entityframework/2.1.0-alpha1",
+      "hashPath": "microsoft.aspnet.identity.entityframework.2.1.0-alpha1.nupkg.sha512"
+    },
+    "microsoft.aspnet.identity.owin/2.1.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1DnCpvvYTcOUEhxk4RfAt0DvMjQ9MfKsxjGsnKf+XbYUBD6PLGh2H/Jf3PNvy5gVqZ8erkHQfxdkdqgfkjtYtQ==",
+      "path": "microsoft.aspnet.identity.owin/2.1.0-alpha1",
+      "hashPath": "microsoft.aspnet.identity.owin.2.1.0-alpha1.nupkg.sha512"
+    },
+    "microsoft.aspnet.identity.samples/2.1.0-alpha1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UneEXzvTh+gUACGFhQ85sZyepEyvgRWBwl/tgt+T1SNbHVS7NgM1XYSQ7W1PPoS68O/9It1mcZPu760JJ+RxpQ==",
+      "path": "microsoft.aspnet.identity.samples/2.1.0-alpha1",
+      "hashPath": "microsoft.aspnet.identity.samples.2.1.0-alpha1.nupkg.sha512"
+    },
+    "microsoft.aspnet.mvc/5.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uFfkDmsAIq+/osB/9qsTi27WzvmYHKbEpYgAkgntlkC3EG4JOJTczPS0B/UBcoNYMLivK0hEZKd+1+1brV+9Jw==",
+      "path": "microsoft.aspnet.mvc/5.1.1",
+      "hashPath": "microsoft.aspnet.mvc.5.1.1.nupkg.sha512"
+    },
+    "microsoft.aspnet.razor/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1QMn1QYi7+0IIq06w+MEi0Mnem8vZbIBR6NLBSF7ghgxQmL+To+jn1Ig6ui9/4weliYx+T2b8/JA6jDhwkz19g==",
+      "path": "microsoft.aspnet.razor/3.1.1",
+      "hashPath": "microsoft.aspnet.razor.3.1.1.nupkg.sha512"
+    },
+    "microsoft.aspnet.web.optimization/1.1.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TWKKpTWEdB8jXp2Vl2TXNKW30GBQg6nnh0y8iZWmGY5c1XY4f649vfDslNHsCsvk9JZxc1Rkm/UGDdfq4gjWRQ==",
+      "path": "microsoft.aspnet.web.optimization/1.1.3",
+      "hashPath": "microsoft.aspnet.web.optimization.1.1.3.nupkg.sha512"
+    },
+    "microsoft.aspnet.webpages/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-X8yBFgcJjtOiuONk8JypdTO+SZh+vUGIlZfPuFB/uR49rgamNf4HVZ6fY/yclJH94OEUMahqBNzWJG2a9PfeWQ==",
+      "path": "microsoft.aspnet.webpages/3.1.1",
+      "hashPath": "microsoft.aspnet.webpages.3.1.1.nupkg.sha512"
     },
     "microsoft.aspnetcore/1.1.2": {
       "type": "package",
@@ -3454,19 +4039,19 @@
       "path": "microsoft.aspnetcore.hosting/1.1.2",
       "hashPath": "microsoft.aspnetcore.hosting.1.1.2.nupkg.sha512"
     },
-    "microsoft.aspnetcore.hosting.abstractions/1.1.2": {
+    "microsoft.aspnetcore.hosting.abstractions/1.1.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-aYGMEERRtETBguFEk315gw+qdqNAUUpLsbnNDeNy38n9kgIrUR6n3T0irtYbXVZiDZ8p6SFvRZgZlyx0S9xLWQ==",
-      "path": "microsoft.aspnetcore.hosting.abstractions/1.1.2",
-      "hashPath": "microsoft.aspnetcore.hosting.abstractions.1.1.2.nupkg.sha512"
+      "sha512": "sha512-PW/WRPMLkzMGOAgC5Wfyh+eKOeQvdVHbIvEEbpOQoRBd1FmUE41n0v/0nhxN50jER94SmnHlSrXRzKwr3EJpUg==",
+      "path": "microsoft.aspnetcore.hosting.abstractions/1.1.3",
+      "hashPath": "microsoft.aspnetcore.hosting.abstractions.1.1.3.nupkg.sha512"
     },
-    "microsoft.aspnetcore.hosting.server.abstractions/1.1.2": {
+    "microsoft.aspnetcore.hosting.server.abstractions/1.1.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-v86xpouHWDE56Zj/sJmhyy8aYi+iLAH8ClNqh3r3coIHWUQ7jDT/K7VE40k7dwThGBOVwmosCiEk3nfM+bH4Mg==",
-      "path": "microsoft.aspnetcore.hosting.server.abstractions/1.1.2",
-      "hashPath": "microsoft.aspnetcore.hosting.server.abstractions.1.1.2.nupkg.sha512"
+      "sha512": "sha512-RxJzm3vIoEjlyrnVkZGQynQL/TCDmZwwuPajaVE22C1qv9CdXvdMj9LPGVG9a9qIAoRHTxmReeDv/koD0DscUg==",
+      "path": "microsoft.aspnetcore.hosting.server.abstractions/1.1.3",
+      "hashPath": "microsoft.aspnetcore.hosting.server.abstractions.1.1.3.nupkg.sha512"
     },
     "microsoft.aspnetcore.html.abstractions/1.1.2": {
       "type": "package",
@@ -3642,6 +4227,13 @@
       "sha512": "sha512-Le+B5WCKxZmHAxqBSWcYWQMUmzwTroIVTLR8uEsxo2Jw4dQFvZnCwVHlGtZx1qvtgVuU/N5NoLz0HCxTwOmfvA==",
       "path": "microsoft.aspnetcore.responsecaching.abstractions/1.1.2",
       "hashPath": "microsoft.aspnetcore.responsecaching.abstractions.1.1.2.nupkg.sha512"
+    },
+    "microsoft.aspnetcore.rewrite/1.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7tzjMYcOsct/va8x4rJjIOwKk017ScCPoEURwt/aXd8SbHEKegCD/B96NAeNLQEVb6fLZHER1YM+9LA7PBdMbA==",
+      "path": "microsoft.aspnetcore.rewrite/1.0.3",
+      "hashPath": "microsoft.aspnetcore.rewrite.1.0.3.nupkg.sha512"
     },
     "microsoft.aspnetcore.routing/1.1.2": {
       "type": "package",
@@ -4049,6 +4641,13 @@
       "path": "microsoft.identitymodel.clients.activedirectory/2.16.204221202",
       "hashPath": "microsoft.identitymodel.clients.activedirectory.2.16.204221202.nupkg.sha512"
     },
+    "microsoft.jquery.unobtrusive.validation/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4B/hmUZnLcT1F6P72HakRCmYFGLDU2zXaI+CXzHBEkrDA7BBjGtwls72un6NH8wvNyeysg6p0fStZpM7tUK1zQ==",
+      "path": "microsoft.jquery.unobtrusive.validation/3.1.1",
+      "hashPath": "microsoft.jquery.unobtrusive.validation.3.1.1.nupkg.sha512"
+    },
     "microsoft.net.http.headers/1.1.2": {
       "type": "package",
       "serviceable": true,
@@ -4062,6 +4661,69 @@
       "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
       "path": "microsoft.netcore.platforms/1.1.0",
       "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
+    },
+    "microsoft.owin/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-lk0kK64mlmcmtWX8YOYkZsnZKDoGEzMZhe8e1bcP+FFcgD4f2QfKwvu5Z8Bh8WS0VO7Rgk+DJ0hwW0k+S/UGMg==",
+      "path": "microsoft.owin/2.1.0",
+      "hashPath": "microsoft.owin.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.host.systemweb/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-S+YOPgtQuXlKGh1OZCVzvmz++2ibNeACzDlMpeXFN1QBUf9l+gstfV0f5hTbhmkDBE8LrSCBWu+9Rrte+ivNhg==",
+      "path": "microsoft.owin.host.systemweb/2.1.0",
+      "hashPath": "microsoft.owin.host.systemweb.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4n1V0p+O6W1L0xHUM8Cjp2Y+MmmUkiCZv6PvRNIDCJD9zlerBJa2HECo9lUiWC+KuasQJ3QxB1FmipNBxdXXIQ==",
+      "path": "microsoft.owin.security/2.1.0",
+      "hashPath": "microsoft.owin.security.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.cookies/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-P+3cjwBpUDGF+5s+oMfyySG0qvLqb71M+1q9jGSsaF0qCg14ix0qF5pEV6IqhGUEgV40E/1K4hDcWjS+essVoQ==",
+      "path": "microsoft.owin.security.cookies/2.1.0",
+      "hashPath": "microsoft.owin.security.cookies.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.facebook/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cTN1SKM/0aV0Qg6M1el6JJyPSSe5lXQBttFkAmYAi5e0JgMW2qhJG9G9r6C1csuif83CQQqMdMEHZHVE3tFzqA==",
+      "path": "microsoft.owin.security.facebook/2.1.0",
+      "hashPath": "microsoft.owin.security.facebook.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.google/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eUImN5w6axp/3O2CoYjGr1QZ32YEpENaih1FjhAJ7w22xgwvFUuDha3rlx56QHUsUipDMT9vt24bx2JRtuYKBw==",
+      "path": "microsoft.owin.security.google/2.1.0",
+      "hashPath": "microsoft.owin.security.google.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.microsoftaccount/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HsF978dvtpaQe8R0WF8YzuuP/tA/K+3nkvP5yZZM9+RO3FhoIViE58FUS24oEPT0Iq9IWJxg5qsuuCQl7MMYJg==",
+      "path": "microsoft.owin.security.microsoftaccount/2.1.0",
+      "hashPath": "microsoft.owin.security.microsoftaccount.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.oauth/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jR/LoeV02Cne9IV6fG4L9KR+uofPLokq6sxGy4bBDxLAAmZ35y0H/NiV6riqXSee6PypNAcJzTytJpYb0xK6Hw==",
+      "path": "microsoft.owin.security.oauth/2.1.0",
+      "hashPath": "microsoft.owin.security.oauth.2.1.0.nupkg.sha512"
+    },
+    "microsoft.owin.security.twitter/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-l4mgOY6mjezqPaMHeD8fwWrOUNQeWwmNWcRIpGxPTrfotiKOFYyFfsvqyaAvNmaolTritvCpJZuu1r5EIHy7bA==",
+      "path": "microsoft.owin.security.twitter/2.1.0",
+      "hashPath": "microsoft.owin.security.twitter.2.1.0.nupkg.sha512"
     },
     "microsoft.rest.clientruntime/2.3.8": {
       "type": "package",
@@ -4133,6 +4795,20 @@
       "path": "microsoft.visualstudio.web.codegenerators.mvc/1.1.1",
       "hashPath": "microsoft.visualstudio.web.codegenerators.mvc.1.1.1.nupkg.sha512"
     },
+    "microsoft.web.infrastructure/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FNmvLn5m2LTU/Rs2KWVo0SIIh9Ek+U0ojex7xeDaSHw/zgEP77A8vY5cVWgUtBGS8MJfDGNn8rpXJWEIQaPwTg==",
+      "path": "microsoft.web.infrastructure/1.0.0",
+      "hashPath": "microsoft.web.infrastructure.1.0.0.nupkg.sha512"
+    },
+    "modernizr/2.6.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3KcdGI/xNPSCqwazIlh+W9TFK9WH0v++qj6L2UXNAjt8FrXIz8QKR51XIzJwdIUVCOp8asdbyGaCcXTCT6ppFg==",
+      "path": "modernizr/2.6.2",
+      "hashPath": "modernizr.2.6.2.nupkg.sha512"
+    },
     "netstandard.library/1.6.1": {
       "type": "package",
       "serviceable": true,
@@ -4154,12 +4830,26 @@
       "path": "nuget.frameworks/3.5.0",
       "hashPath": "nuget.frameworks.3.5.0.nupkg.sha512"
     },
+    "owin/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OseTFniKmyp76mEzOBwIKGBRS5eMoYNkMKaMXOpxx9jv88+b6mh1rSaw43vjBOItNhaLFG3d0a20PfHyibH5sw==",
+      "path": "owin/1.0.0",
+      "hashPath": "owin.1.0.0.nupkg.sha512"
+    },
     "remotion.linq/2.1.1": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-IJn0BqkvwEDpP+2qjvci7n4/a9f7DhKESLWb2/uG4xQh3rTkGTBUz69bI4IivCoKkTFAqjXxYDZw2K/npohjsw==",
       "path": "remotion.linq/2.1.1",
       "hashPath": "remotion.linq.2.1.1.nupkg.sha512"
+    },
+    "respond/1.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-n/EC7jh1JBc5iE7TAmyFvrziR5Lir2TG0J0ipq4NSe//7Ih0rbMS2qmodIXkAFDf6oQZkYARLa5re9dSDb3gHQ==",
+      "path": "respond/1.2.0",
+      "hashPath": "respond.1.2.0.nupkg.sha512"
     },
     "sendgrid/9.9.0": {
       "type": "package",
@@ -4518,6 +5208,13 @@
       "path": "system.xml.xdocument/4.3.0",
       "hashPath": "system.xml.xdocument.4.3.0.nupkg.sha512"
     },
+    "webgrease/1.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VoyDSOOugLx3q5IyOgEcjeYZQOqV9VWZQT57UtN4szlYhAmOcEjVfKWXbtRqBuX43pgyL9E7nMSIPoryC8Cu1Q==",
+      "path": "webgrease/1.5.2",
+      "hashPath": "webgrease.1.5.2.nupkg.sha512"
+    },
     "windowsazure.storage/8.4.0": {
       "type": "package",
       "serviceable": true,
@@ -4586,6 +5283,11 @@
       "sha512": ""
     },
     "system.net.http/4.0.0.0": {
+      "type": "referenceassembly",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "system.net.http.webrequest/4.0.0.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""

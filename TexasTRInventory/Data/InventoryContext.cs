@@ -10,7 +10,7 @@ namespace TexasTRInventory.Data
         {
         }
 
-        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Company> Companies { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<FilePath> FilePaths { get; set; }
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
@@ -18,9 +18,10 @@ namespace TexasTRInventory.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);//EXP 8.9.17 Got this from SA. please god let it work.
-            modelBuilder.Entity<Supplier>().ToTable("Supplier");
-            modelBuilder.Entity<Product>().ToTable("Product");
-            modelBuilder.Entity<FilePath>().ToTable("FilePath");
+            modelBuilder.Entity<Company>().ToTable(nameof(Company)).Property(t => t.Name).HasMaxLength(250);
+                modelBuilder.Entity<Company>().HasIndex(c => c.Name).IsUnique(); //EXP 9.25.17. Putting in an index
+            modelBuilder.Entity<Product>().ToTable(nameof(Product));
+            modelBuilder.Entity<FilePath>().ToTable(nameof(FilePath));
 
         }
     }

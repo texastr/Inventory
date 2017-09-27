@@ -8,29 +8,23 @@ using TexasTRInventory.Data;
 using TexasTRInventory.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Web;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Windows.Forms;
-using Microsoft.Azure.KeyVault;
-using System.Web.Configuration;
-using System.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TexasTRInventory.Controllers
 {
+    
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly InventoryContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ProductsController(InventoryContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ProductsController(InventoryContext context)
         {
             _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         // GET: Products
@@ -39,18 +33,16 @@ namespace TexasTRInventory.Controllers
 
             //EXP 9.14.17 filtering out products that aren't from the user
 
-            //TexasTRInventory.Data.DbInitializer.TrashIntialize(_context);
+            //TexasTRInventory.Data.DbInitializer.TrashInitialize(_context);
             IQueryable<Product> inventoryContext;
-            if (!this.User.IsInRole(Constants.Roles.InternalUser))
+            if (Utils.IsInternalUser(User))
             {
-                int? supplierID = Utils.SafeFindSupplierID(User);
-                supplierID = supplierID == null ? -1 : supplierID;
-
-                inventoryContext = _context.Products.Where(p => p.SupplierID == supplierID);
+                inventoryContext = _context.Products.Include(p => p.Supplier);
             }
             else
             {
-                inventoryContext = _context.Products.Include(p => p.Supplier);
+                int? supplierID = Utils.SupplierID(User);
+                inventoryContext = _context.Products.Where(p => p.SupplierID == supplierID);
             }
 
             return View(await inventoryContext.ToListAsync());
@@ -72,14 +64,19 @@ namespace TexasTRInventory.Controllers
             {
                 return NotFound();
             }
+
+            if (!User.IsOwnProduct(product))
+            {
+                return HiddenProductError();
+            }
+
             return View(product);
         }
 
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, nameof(Supplier.ID) , nameof(Supplier.Name));
-            return View();
+            return ViewWithSupplierList();
         }
         
         // POST: Products/Create
@@ -87,35 +84,50 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile upload,[Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Create(IFormFile upload,[Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category,LocalFilePath")] Product product)
         {
+            //EXP 9.26.17 Disallow non-image files
+            FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(upload) };
+
             if (ModelState.IsValid)
             {
-                //EXP 8.30.17 adding in stuff regarding the file
-                //TODO throw exception handling everywhere. handle files that are too big (e.g. Jared's tiff)
-                if (upload != null)
-                {
-                    if (upload.ContentType.StartsWith("image/"))
-                    {
-                        product.ImageFilePath = await UploadFile(upload);
-                    }
-                    else
-                    {
-                        //TODO
-                        MessageBox.Show("The file you chose wasn't an image and won't be saved. Posner! Find a better way to deal with this");
-                    }
-                                    }
+                product.ImageFilePath = uploadedImage;
+                product.SupplierID = Utils.IsInternalUser(User) ? product.SupplierID : Utils.SupplierID(User);
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
-            return View(product);
+            return ViewWithSupplierList();
         }
 
-        private async Task<FilePath> UploadFile(IFormFile upload)
+        private async Task<string> UploadImageWrapper(IFormFile upload)
         {
-            FilePath ret = new FilePath { FileName = "bad File" };
+            if (upload != null)
+            {
+                if (upload.ContentType.StartsWith("image/"))
+                {
+                    try
+                    {
+                        string newFileName = await UploadFile(upload);
+                        return newFileName;
+                    }
+                    catch
+                    {
+                        ModelState.AddModelError(string.Empty, "Uploading the product's image file failed.");
+                        //TODO. This is a good spot to log an error
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "The file you attempted to upload is not an image file.");
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<string> UploadFile(IFormFile upload)
+        {
             string newFileName = UniqueFileName(upload.FileName);
             CloudBlockBlob blob = await GlobalCache.GetBlob(newFileName);
             blob.Properties.ContentType = upload.ContentType;
@@ -127,10 +139,7 @@ namespace TexasTRInventory.Controllers
                 blob.UploadFromStream(intermediateMemory);
             }
 
-            ret.FileName = newFileName;
-
-
-            return ret;
+            return newFileName;
         }
 
         private string UniqueFileName(string fileName)
@@ -146,12 +155,21 @@ namespace TexasTRInventory.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(m => m.ID == id);
+            var product = await _context.Products
+                .Include(p => p.Supplier)
+                .Include(p => p.ImageFilePath)
+                .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {
                 return NotFound();
             }
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, nameof(Supplier.ID), nameof(Supplier.Name), product.SupplierID);
+
+            if (!User.IsOwnProduct(product))
+            {
+                return HiddenProductError();
+            }
+
+            ViewData["SupplierID"] = Utils.CompanyList(_context, product.Supplier);
             return View(product);
         }
 
@@ -160,18 +178,39 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
-            if (id != product.ID)
+            Product existingProduct = await _context.Products.AsNoTracking()
+                .Include(p => p.Supplier)
+                .Include(p => p.ImageFilePath)
+                .SingleOrDefaultAsync(m => m.ID == id);
+
+
+            if (id != product.ID || existingProduct == null)
             {
                 return NotFound();
             }
+
+            if (!User.IsOwnProduct(existingProduct))
+            {
+                return HiddenProductError();
+            }
+
+
+            string newFileName = await UploadImageWrapper(upload);
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(product);
+                    if (newFileName != null)
+                    {
+                        FilePath filePath = await GetEmptyFilePath(existingProduct);
+
+                        filePath.FileName = newFileName; //then wire in the new file
+                    }
+                    
+                    _context.Update(product); //TODO does this delete the filePath? It shouldn't because it's not saved on the product object
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -187,8 +226,29 @@ namespace TexasTRInventory.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["SupplierID"] = new SelectList(_context.Suppliers, "ID", "ID", product.SupplierID);
+            ViewData["SupplierID"] = new SelectList(_context.Companies, "ID", "ID", product.SupplierID);
             return View(product);
+        }
+
+        private async Task<FilePath> GetEmptyFilePath(Product product)
+        {
+            FilePath oldFilePath = product.ImageFilePath;
+            
+            if (oldFilePath == null)//hitherto there was no image saved
+            {
+                FilePath ret = new FilePath() { ProductID = product.ID };
+                _context.Add(ret);
+                return ret;
+            }
+            //If there was an image, let's delete it and return the existing object
+            string oldFileName = oldFilePath.FileName;
+            if (!string.IsNullOrWhiteSpace(oldFileName))
+            {
+                CloudBlockBlob blob = await GlobalCache.GetBlob(oldFileName); //delete the old file
+                await blob.DeleteIfExistsAsync();
+            }
+
+            return oldFilePath;
         }
 
         // GET: Products/Delete/5
@@ -207,6 +267,11 @@ namespace TexasTRInventory.Controllers
                 return NotFound();
             }
 
+            if (!User.IsOwnProduct(product))
+            {
+                return HiddenProductError();
+            }
+
             return View(product);
         }
 
@@ -216,6 +281,12 @@ namespace TexasTRInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.SingleOrDefaultAsync(m => m.ID == id);
+
+            if (!User.IsOwnProduct(product))
+            {
+                return HiddenProductError();
+            }
+            
             //EXP 9.6.17
             var filePaths = _context.FilePaths.Where(f => f.ProductID == id);
             foreach (FilePath fp in filePaths)
@@ -237,5 +308,26 @@ namespace TexasTRInventory.Controllers
         {
             return _context.Products.Any(e => e.ID == id);
         }
+
+        private IActionResult ViewWithSupplierList(Product currentProduct = null)
+        {
+            ViewData[Constants.KeyNames.SupplierID] = Utils.CompanyList(_context, currentProduct?.Supplier);
+            return View();
+        }
+
+        private IActionResult HiddenProductError()
+        {
+            ViewData[Constants.KeyNames.ErrorDetails] = "You do not have the right to access that product.";
+            return View("Error");
+        }
+    }
+
+    static class ProductExtensions
+    {
+        public static bool IsOwnProduct(this ClaimsPrincipal user, Product product)
+        {
+            return Utils.IsInternalUser(user) || user.FindFirst(Constants.ClaimTypes.EmployerID).Value == product.SupplierID.ToString();
+        }
+
     }
 }

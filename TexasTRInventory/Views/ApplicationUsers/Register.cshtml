@@ -1,12 +1,13 @@
-﻿@using TexasTRInventory.Models.AccountViewModels
-@model UserViewModel
+﻿@using TexasTRInventory.Models
+@model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
 
 <h2>@ViewData["Title"].</h2>
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+@*EXP 9.25.17. Moving register to ApplicationUsers*@
+<form asp-controller="ApplicationUsers" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <h4>Create a new account.</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -33,9 +34,25 @@
     </div>
     <!--copied from the product's create page-->
     <div class="form-group">
-        <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+        <label asp-for="EmployerID" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <select asp-for="SupplierID" class="form-control" asp-items="ViewBag.SupplierID"></select>
+            <select asp-for="EmployerID" class="form-control" asp-items="ViewBag.EmployerID"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EmailConfirmed" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="EmailConfirmed" />
+            <span asp-validation-for="EmailConfirmed" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IsDisabled" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="IsDisabled" />
+            <span asp-validation-for="IsDisabled" class="text-danger"></span>
         </div>
     </div>
 

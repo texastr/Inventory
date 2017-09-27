@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 namespace TexasTRInventory.Authorization
 {
     public class AdministratorAuthorizationHandler
-                    : AuthorizationHandler<OperationAuthorizationRequirement>
+                    : AuthorizationHandler<OperationAuthorizationRequirement> 
     {
         protected override Task HandleRequirementAsync(
                                               AuthorizationHandlerContext context,

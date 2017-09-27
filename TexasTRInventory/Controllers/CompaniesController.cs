@@ -12,67 +12,24 @@ using Microsoft.AspNetCore.Identity;
 
 namespace TexasTRInventory.Controllers
 {
-    public class SuppliersController : Controller
+    
+    public class CompaniesController : Controller
     {
         private readonly InventoryContext _context;
-        private readonly UserManager<ApplicationUser> _expfield;//EXP 9.13.17. bullshit
-
-        public SuppliersController(InventoryContext context
-            //EXP 9.13.17. Doing bullshith with the constructor
-            ,UserManager<ApplicationUser> EXPparam
-            
-            )
+        
+        public CompaniesController(InventoryContext context)
         {
             _context = context;
-            _expfield = EXPparam;//EXP bullshit
         }
 
-        // GET: Suppliers
+        // GET: Companies
         public async Task<IActionResult> Index()
         {
-            //EXP 9.13.17. all bullshit.
-            using (var userStore = new UserStore<ApplicationUser>(_context))
-            {
-                using (var userManager = new UserManager<ApplicationUser>(userStore, null, new PasswordHasher<ApplicationUser>(), null, null, null, null, null, null))
-                {
-                    ApplicationUser expUser = new ApplicationUser
-                    {
-                        UserName = "blah@mailinator.com",
-                        Email = "blah@mailinator.com",
-                        EmailConfirmed = true
-                    };
-
-                    string pwd = await GlobalCache.GetSecret(Constants.SecretNames.AdminInitializer);
-                    
-                    var chkUser = await _expfield.CreateAsync(expUser/*);/*/, pwd);
-                    if (chkUser.Succeeded)
-                    {
-                        await _expfield.AddToRoleAsync(expUser, Constants.Roles.Administrator);
-                    }
-                }
-            }
-
+           
             //This is the only line that is not shit.
-            return View(await _context.Suppliers.ToListAsync());
+            return View(await _context.Companies.ToListAsync());
         }
-        // GET: Suppliers/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var supplier = await _context.Suppliers
-                .SingleOrDefaultAsync(m => m.ID == id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return View(supplier);
-        }
-
+ 
         // GET: Suppliers/Create
         public IActionResult Create()
         {
@@ -84,7 +41,7 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name")] Supplier supplier)
+        public async Task<IActionResult> Create([Bind("ID,Name")] Company supplier)
         {
             if (ModelState.IsValid)
             {
@@ -103,8 +60,13 @@ namespace TexasTRInventory.Controllers
                 return NotFound();
             }
 
-            var supplier = await _context.Suppliers.SingleOrDefaultAsync(m => m.ID == id);
-            if (supplier == null)
+            if (id == GlobalCache.GetTexasTRCompanyID(_context))
+            {
+                return DontTouchTexasTR();
+            }
+
+            var supplier = await _context.Companies.SingleOrDefaultAsync(m => m.ID == id);
+            if (supplier == null) //TODO -- also exclude internal supplier. But first let me deal with the post method
             {
                 return NotFound();
             }
@@ -116,11 +78,17 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name")] Supplier supplier)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name")] Company supplier)
         {
             if (id != supplier.ID)
             {
                 return NotFound();
+            }
+
+            //EXP 9.22.17. Don't let people edit TexasTR
+            if (id==GlobalCache.GetTexasTRCompanyID(_context))
+            {
+                return DontTouchTexasTR();
             }
 
             if (ModelState.IsValid)
@@ -141,6 +109,19 @@ namespace TexasTRInventory.Controllers
                         throw;
                     }
                 }
+                catch (DbUpdateException ex)
+                {
+                    if (Utils.IsUniqueKeyViolation(ex.InnerException))
+                    {
+                        ModelState.AddModelError(string.Empty, "The database could not accept your edits. Each company must have a unique name.");
+                        return View(supplier);
+                    }
+
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction("Index");
             }
             return View(supplier);
@@ -154,7 +135,12 @@ namespace TexasTRInventory.Controllers
                 return NotFound();
             }
 
-            var supplier = await _context.Suppliers
+/*            if (id == GlobalCache.GetTexasTRCompanyID(_context))
+            {
+                return DontTouchTexasTR();
+            }
+            */
+            var supplier = await _context.Companies
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (supplier == null)
             {
@@ -169,15 +155,25 @@ namespace TexasTRInventory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var supplier = await _context.Suppliers.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Suppliers.Remove(supplier);
+            if (id == GlobalCache.GetTexasTRCompanyID(_context))
+            {
+                return DontTouchTexasTR();
+            }
+            var supplier = await _context.Companies.SingleOrDefaultAsync(m => m.ID == id);
+            _context.Companies.Remove(supplier);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool SupplierExists(int id)
         {
-            return _context.Suppliers.Any(e => e.ID == id);
+            return _context.Companies.Any(e => e.ID == id);
+        }
+
+        private IActionResult DontTouchTexasTR()
+        {
+            ViewData[Constants.KeyNames.ErrorDetails] = "You cannot edit or delete the Texas TR record.";
+            return View("Error");
         }
     }
 }

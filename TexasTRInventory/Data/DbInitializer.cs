@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace TexasTRInventory.Data
 {
@@ -12,19 +14,12 @@ namespace TexasTRInventory.Data
         public static async Task Initialize(InventoryContext context)
         {
             context.Database.EnsureCreated();
-            if (!context.Roles.Any())
+            if (!context.Companies.Where(c => c.IsInternal).Any())
             {
-                using (var roleStore = new RoleStore<IdentityRole>(context))
-                {
-                    using (var roleManager = new RoleManager<IdentityRole>(roleStore, null, null, null, null, null))
-                    {
-                        foreach (string role in Constants.Roles.ToArray())
-                        {
-                            await roleManager.CreateAsync(new IdentityRole(role));
-                        }
-                    }
-                }
+                context.Companies.Add(new Company {Name = Constants.TexasTRCompanyName, IsInternal=true });
+                context.SaveChanges();
             }
+        
             if (!context.Users.Any())
             {
                 //In theory, things could go wrong, because the other users will have a userManager/userStore from DI
@@ -33,41 +28,38 @@ namespace TexasTRInventory.Data
                 {
                     using (var userManager = new UserManager<ApplicationUser>(userStore,null,new PasswordHasher<ApplicationUser>(),null,null,new UpperInvariantLookupNormalizer(),null,null,null))
                     {
-                        string adminIdentifier = GlobalCache.Indexer(Constants.ConfigNames.AdminUsername);
+                        string adminIdentifier = GlobalCache.GetAdminUsername();
                         ApplicationUser expUser = new ApplicationUser()
                         {
                             UserName = adminIdentifier,
                             Email = adminIdentifier,
-                            EmailConfirmed = true
+                            EmailConfirmed = true,
+                            EmployerID = GlobalCache.GetTexasTRCompanyID(context)
                         };
 
                         string pwd = await GlobalCache.GetSecret(Constants.SecretNames.AdminInitializer);
 
                         var chkUser = await userManager.CreateAsync(expUser, pwd);
-                        if (chkUser.Succeeded)
-                        {
-                            await userManager.AddToRolesAsync(expUser, new string[] { Constants.Roles.Administrator, Constants.Roles.InternalUser}); 
-                        }
                     }
                 }
             }
         }
     
         //EXP 9.12.17. Making its own method
-        public static void TrashIntialize(InventoryContext context)
+        public static void TrashInitialize(InventoryContext context)
         {
 
-            if (context.Products.Any()) return;
-            var suppliers = new Supplier[]
+            //if (context.Products.Any()) return;
+            var suppliers = new Company[]
             {
-                    new Supplier{/*ID=1,*/ Name="First Supplier"},//Comenting out the IDs, to see if that'll cause it to stop throwing errors
-                    new Supplier{/*ID=2,*/ Name="Second Supplier"},
-                    new Supplier{/*ID=3, */Name="Third Supplier"},
-                    new Supplier{/*ID=4,*/ Name="Fourth Supplier"},
+                    new Company{/*ID=98,*/ Name="First Supplier"},//Comenting out the IDs, to see if that'll cause it to stop throwing errors
+                    new Company{/*ID=2,*/ Name="Second Supplier"},
+                    new Company{/*ID=3, */Name="Third Supplier"},
+                    new Company{/*ID=4,*/ Name="Fourth Supplier"},
             };
-            foreach (Supplier m in suppliers)
+            foreach (Company m in suppliers)
             {
-                context.Suppliers.Add(m);
+                context.Companies.Add(m);
             }
             context.SaveChanges();
 

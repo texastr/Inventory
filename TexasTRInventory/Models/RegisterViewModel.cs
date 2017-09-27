@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TexasTRInventory.Models.AccountViewModels
+namespace TexasTRInventory.Models
 {
-    public class UserViewModel
+    public class RegisterViewModel
     {
         [Required]
         [EmailAddress]
@@ -24,7 +24,11 @@ namespace TexasTRInventory.Models.AccountViewModels
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
+        public bool IsDisabled { get; set; }
+        public bool EmailConfirmed { get; set; }
+
         //EXP 9.14.17. Just getting started on this. I have no idea what I'm doing.
-        public int? SupplierID { get; set; }
+        [Required]
+        public int EmployerID { get; set; }
     }
 }

@@ -17,6 +17,12 @@
           "jquery": "1.9.0"
         }
       },
+      "BuildBundlerMinifier/2.5.357": {
+        "type": "package",
+        "build": {
+          "build/BuildBundlerMinifier.targets": {}
+        }
+      },
       "EntityFramework/6.1.0": {
         "type": "package",
         "frameworkAssemblies": [
@@ -503,10 +509,10 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Hosting.Abstractions/1.1.2": {
+      "Microsoft.AspNetCore.Hosting.Abstractions/1.1.3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
@@ -521,7 +527,7 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.2": {
+      "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.2",
@@ -932,6 +938,28 @@
         },
         "runtime": {
           "lib/net451/Microsoft.AspNetCore.ResponseCaching.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.Rewrite/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
+          "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
+          "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
+          "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
+          "Microsoft.Extensions.Options": "1.1.2",
+          "NETStandard.Library": "1.6.1"
+        },
+        "frameworkAssemblies": [
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
         }
       },
       "Microsoft.AspNetCore.Routing/1.1.2": {
@@ -2872,6 +2900,12 @@
           "jquery": "1.9.0"
         }
       },
+      "BuildBundlerMinifier/2.5.357": {
+        "type": "package",
+        "build": {
+          "build/BuildBundlerMinifier.targets": {}
+        }
+      },
       "EntityFramework/6.1.0": {
         "type": "package",
         "frameworkAssemblies": [
@@ -3327,10 +3361,10 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Hosting.Abstractions/1.1.2": {
+      "Microsoft.AspNetCore.Hosting.Abstractions/1.1.3": {
         "type": "package",
         "dependencies": {
-          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.2",
+          "Microsoft.AspNetCore.Hosting.Server.Abstractions": "1.1.3",
           "Microsoft.AspNetCore.Http.Abstractions": "1.1.2",
           "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
@@ -3345,7 +3379,7 @@
           "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.2": {
+      "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.3": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "1.1.2",
@@ -3756,6 +3790,28 @@
         },
         "runtime": {
           "lib/net451/Microsoft.AspNetCore.ResponseCaching.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.Rewrite/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.3",
+          "Microsoft.AspNetCore.Http.Extensions": "1.1.2",
+          "Microsoft.Extensions.Configuration.Abstractions": "1.1.2",
+          "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
+          "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
+          "Microsoft.Extensions.Options": "1.1.2",
+          "NETStandard.Library": "1.6.1"
+        },
+        "frameworkAssemblies": [
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Microsoft.AspNetCore.Rewrite.dll": {}
         }
       },
       "Microsoft.AspNetCore.Routing/1.1.2": {
@@ -5702,6 +5758,25 @@
         "bootstrap.nuspec"
       ]
     },
+    "BuildBundlerMinifier/2.5.357": {
+      "sha512": "kE/it+aN0DNmttXFYJSyBPGgzq4D4xg7W3KgRo917VP/wDb5bzH45u996pUrdoe9Zi54TGIS0Y3PEa42wvld2w==",
+      "type": "package",
+      "path": "buildbundlerminifier/2.5.357",
+      "files": [
+        "build/BuildBundlerMinifier.targets",
+        "buildbundlerminifier.2.5.357.nupkg.sha512",
+        "buildbundlerminifier.nuspec",
+        "tools/net46/BundlerMinifier.dll",
+        "tools/net46/NUglify.dll",
+        "tools/net46/Newtonsoft.Json.dll",
+        "tools/netcoreapp2.0/BundlerMinifier.dll",
+        "tools/netcoreapp2.0/NUglify.dll",
+        "tools/netcoreapp2.0/Newtonsoft.Json.dll",
+        "tools/netstandard1.3/BundlerMinifier.dll",
+        "tools/netstandard1.3/NUglify.dll",
+        "tools/netstandard1.3/Newtonsoft.Json.dll"
+      ]
+    },
     "EntityFramework/6.1.0": {
       "sha512": "u/M0OEfqxTUsL5BwzD66eBGm278/ozqdLK3JvMO6QwUxxc+z7ZUkTYm4suDhWRqzkc6mOhvXDQY5dZUwbldxyQ==",
       "type": "package",
@@ -6198,29 +6273,29 @@
         "microsoft.aspnetcore.hosting.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.Hosting.Abstractions/1.1.2": {
-      "sha512": "aYGMEERRtETBguFEk315gw+qdqNAUUpLsbnNDeNy38n9kgIrUR6n3T0irtYbXVZiDZ8p6SFvRZgZlyx0S9xLWQ==",
+    "Microsoft.AspNetCore.Hosting.Abstractions/1.1.3": {
+      "sha512": "PW/WRPMLkzMGOAgC5Wfyh+eKOeQvdVHbIvEEbpOQoRBd1FmUE41n0v/0nhxN50jER94SmnHlSrXRzKwr3EJpUg==",
       "type": "package",
-      "path": "microsoft.aspnetcore.hosting.abstractions/1.1.2",
+      "path": "microsoft.aspnetcore.hosting.abstractions/1.1.3",
       "files": [
         "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.dll",
         "lib/net451/Microsoft.AspNetCore.Hosting.Abstractions.xml",
         "lib/netstandard1.3/Microsoft.AspNetCore.Hosting.Abstractions.dll",
         "lib/netstandard1.3/Microsoft.AspNetCore.Hosting.Abstractions.xml",
-        "microsoft.aspnetcore.hosting.abstractions.1.1.2.nupkg.sha512",
+        "microsoft.aspnetcore.hosting.abstractions.1.1.3.nupkg.sha512",
         "microsoft.aspnetcore.hosting.abstractions.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.2": {
-      "sha512": "v86xpouHWDE56Zj/sJmhyy8aYi+iLAH8ClNqh3r3coIHWUQ7jDT/K7VE40k7dwThGBOVwmosCiEk3nfM+bH4Mg==",
+    "Microsoft.AspNetCore.Hosting.Server.Abstractions/1.1.3": {
+      "sha512": "RxJzm3vIoEjlyrnVkZGQynQL/TCDmZwwuPajaVE22C1qv9CdXvdMj9LPGVG9a9qIAoRHTxmReeDv/koD0DscUg==",
       "type": "package",
-      "path": "microsoft.aspnetcore.hosting.server.abstractions/1.1.2",
+      "path": "microsoft.aspnetcore.hosting.server.abstractions/1.1.3",
       "files": [
         "lib/net451/Microsoft.AspNetCore.Hosting.Server.Abstractions.dll",
         "lib/net451/Microsoft.AspNetCore.Hosting.Server.Abstractions.xml",
         "lib/netstandard1.3/Microsoft.AspNetCore.Hosting.Server.Abstractions.dll",
         "lib/netstandard1.3/Microsoft.AspNetCore.Hosting.Server.Abstractions.xml",
-        "microsoft.aspnetcore.hosting.server.abstractions.1.1.2.nupkg.sha512",
+        "microsoft.aspnetcore.hosting.server.abstractions.1.1.3.nupkg.sha512",
         "microsoft.aspnetcore.hosting.server.abstractions.nuspec"
       ]
     },
@@ -6545,6 +6620,19 @@
         "lib/netstandard1.3/Microsoft.AspNetCore.ResponseCaching.Abstractions.xml",
         "microsoft.aspnetcore.responsecaching.abstractions.1.1.2.nupkg.sha512",
         "microsoft.aspnetcore.responsecaching.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.AspNetCore.Rewrite/1.0.3": {
+      "sha512": "7tzjMYcOsct/va8x4rJjIOwKk017ScCPoEURwt/aXd8SbHEKegCD/B96NAeNLQEVb6fLZHER1YM+9LA7PBdMbA==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.rewrite/1.0.3",
+      "files": [
+        "lib/net451/Microsoft.AspNetCore.Rewrite.dll",
+        "lib/net451/Microsoft.AspNetCore.Rewrite.xml",
+        "lib/netstandard1.3/Microsoft.AspNetCore.Rewrite.dll",
+        "lib/netstandard1.3/Microsoft.AspNetCore.Rewrite.xml",
+        "microsoft.aspnetcore.rewrite.1.0.3.nupkg.sha512",
+        "microsoft.aspnetcore.rewrite.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Routing/1.1.2": {
@@ -10765,6 +10853,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.5.2": [
+      "BuildBundlerMinifier >= 2.5.357",
       "Microsoft.ApplicationInsights.AspNetCore >= 2.0.0",
       "Microsoft.AspNet.Identity.Samples >= 2.1.0-alpha1",
       "Microsoft.AspNetCore >= 1.1.2",
@@ -10772,6 +10861,7 @@
       "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore >= 1.1.2",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 1.1.2",
       "Microsoft.AspNetCore.Mvc >= 1.1.3",
+      "Microsoft.AspNetCore.Rewrite >= 1.0.3",
       "Microsoft.AspNetCore.StaticFiles >= 1.1.2",
       "Microsoft.Azure.KeyVault >= 2.3.2",
       "Microsoft.EntityFrameworkCore.Design >= 1.1.2",
@@ -10881,6 +10971,10 @@
             "target": "Package",
             "version": "2.3.2"
           },
+          "Microsoft.AspNetCore.Rewrite": {
+            "target": "Package",
+            "version": "1.0.3"
+          },
           "Microsoft.AspNetCore.StaticFiles": {
             "target": "Package",
             "version": "1.1.2"
@@ -10888,6 +10982,10 @@
           "WindowsAzure.Storage": {
             "target": "Package",
             "version": "8.4.0"
+          },
+          "BuildBundlerMinifier": {
+            "target": "Package",
+            "version": "2.5.357"
           }
         }
       }

@@ -16,24 +16,6 @@ namespace TexasTRInventory.Controllers
 
         public IActionResult Index()
         {
-
-            ViewData["Message"] = "testing";
-
-            ViewData["EXPTESTKEY"] = GlobalCache.Indexer("EXPOnlyOnLocal");
-            return View();
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
             return View();
         }
 
