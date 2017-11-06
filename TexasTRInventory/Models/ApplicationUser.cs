@@ -8,16 +8,18 @@ using System.ComponentModel;
 
 namespace TexasTRInventory.Models
 {
-    // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser, IUser<String>
     {
 
+        [DisplayName("Is User Disabled?")]
         public bool IsDisabled { get; set; }
 
-        //EXP 9.20.17. Going back to using claims rather than a field. Or maybe both? I don't know
+        [DisplayName("Employer")]
         public int? EmployerID { get; set; }
 
         public Company Employer { get; set; }
 
+        [DisplayName("Is Email Confirmed?")]
+        public override bool EmailConfirmed { get => base.EmailConfirmed; set => base.EmailConfirmed = value; }
     }
 }

@@ -4,11 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TexasTRInventory.Models.ManageViewModels
+namespace TexasTRInventory.Models.AccountViewModels
 {
-    public class SetPasswordViewModel
+    public class ChangePasswordViewModel
     {
         [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Current password")]
+        public string OldPassword { get; set; }
+
+        [Required]
+        //This is bullshit. there should be only one place where password length is enforced
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
@@ -18,9 +24,5 @@ namespace TexasTRInventory.Models.ManageViewModels
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
-        //EXP 9.15.17 putting this in, because people now do this "activity" (in the Epic sense) before logging in
-        public string UserID { get; set; }
-        public string Code { get; set; }
     }
 }

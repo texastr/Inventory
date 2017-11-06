@@ -1,52 +1,30 @@
-@model TexasTRInventory.Models.Product
+@model TexasTRInventory.Models.ProductViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
+<script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script> @*TODO maybe load directly from github and fallback on my copy?*@
+<script src="~/js/product.js"></script>
+
 <h2>Create</h2>
-<!--comment everything that was not automatically created by the scaffolder!!!-->
-<!--added in the enctype and the method, although I really don't know why-->
 <form asp-action="Create" enctype="multipart/form-data" method="post">
     <div class="form-horizontal">
         <h4>Product</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <!--adding in the vollowing div-->
         <div class="form-group">
-            @Html.Label("EXP This doesn't matter","Product Image", new{@class = "control-label col-md-2"})
-           <div class="col-md-10">
-               <input type="file" id="Photo" name="upload" />
-           </div>
-        </div>
-        @if (Utils.IsInternalUser(User))
-        {
-            <div class="form-group">
-                <label asp-for="SupplierID" class="col-md-2 control-label"></label>
-                <div class="col-md-10">
-                    <select asp-for="SupplierID" class ="form-control" asp-items="ViewBag.SupplierID"></select>
-                </div>
+            <label asp-for="Brand" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
             </div>
-        }
+        </div>
         <div class="form-group">
             <label asp-for="SKU" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="SKU" class="form-control" />
                 <span asp-validation-for="SKU" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PartNumber" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PartNumber" class="form-control" />
-                <span asp-validation-for="PartNumber" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="AmazonASIN" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="AmazonASIN" class="form-control" />
-                <span asp-validation-for="AmazonASIN" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -57,17 +35,17 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Inventory" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Inventory" class="form-control" />
-                <span asp-validation-for="Inventory" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
             <label asp-for="Info" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="Info" class="form-control" />
                 <span asp-validation-for="Info" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PackageContents" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PackageContents" class="form-control" />
+                <span asp-validation-for="PackageContents" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -78,13 +56,6 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Dealer" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Dealer" class="form-control" />
-                <span asp-validation-for="Dealer" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
             <label asp-for="MAP" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="MAP" class="form-control" />
@@ -92,10 +63,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Dimentions" class="col-md-2 control-label"></label>
+            <label asp-for="Dimensions" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Dimentions" class="form-control" />
-                <span asp-validation-for="Dimentions" class="text-danger"></span>
+                <input asp-for="Dimensions" class="form-control" />
+                <span asp-validation-for="Dimensions" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -119,20 +90,62 @@
                 <span asp-validation-for="Website" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="PackageContents" class="col-md-2 control-label"></label>
+        <div class="form-group" id="fileUploaders">
+            @Html.Label("EXP", TexasTRInventory.Models.ProductViewModel.ImageFilesDisplayName(), new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input asp-for="PackageContents" class="form-control" />
-                <span asp-validation-for="PackageContents" class="text-danger"></span>
+                <div id="dynamicallyGrowingDiv">
+                </div>
+                <script>initializeFields("dynamicallyGrowingDiv",@GlobalCache.MinImgFilesCnt()); </script>
+                <div class="col-md-10">
+                    <input type="button" onclick="addFileField('dynamicallyGrowingDiv')" value="add more files" />
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Category" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
+         </div>
+        @if (Utils.IsInternalUser(User))
+        {
+            <div class="form-group">
+                <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="SupplierID" class="form-control" asp-items=ViewBag.SupplierID></select>
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label asp-for="PartNumber" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="PartNumber" class="form-control" />
+                    <span asp-validation-for="PartNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Inventory" class="form-control" />
+                    <span asp-validation-for="Inventory" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="AmazonASIN" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="AmazonASIN" class="form-control" />
+                    <span asp-validation-for="AmazonASIN" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dealer" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Dealer" class="form-control" />
+                    <span asp-validation-for="Dealer" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Category" class="form-control" />
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+            </div>
+
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />

@@ -13,31 +13,38 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
-//using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Html;
 
 namespace TexasTRInventory
 {
     public static class Utils
     {
+		//Maybe this should be deleted. it isn't working how I hoped it would work
+		public static IHtmlContent QuotedString(this IHtmlHelper htmlHelper, string arg)
+		{
+			return htmlHelper.Raw("\"" + arg + "\"");
+		}
 
-        public static async Task<string> GetImageURL(Product product)
+		public static async Task<string[]> GetImageURLs(Product product)
         {
-            string ret = "";
-            string fileName =  product.ImageFilePath?.FileName;
-            if (!String.IsNullOrEmpty(fileName))
-            {
-                try
-                {
-                    ret = (await GlobalCache.GetBlob(fileName)).Uri.AbsoluteUri;
-                }
-                catch
-                {
-                    //If we can't get the image, just return null. NBD
-                }
-            }
-
+			string[] ret = new string[product.ImageFilePaths.Count];
+			for(int i = 0; i < ret.Length; i++)
+			{
+				string fileName = product.ImageFilePaths.ElementAt(i)?.FileName;
+				if (!String.IsNullOrEmpty(fileName))
+				{
+					try
+					{
+						ret[i] = (await GlobalCache.GetBlob(fileName)).Uri.AbsoluteUri;
+					}
+					catch
+					{
+						//If we can't get the image, just return null. NBD
+						ret[i] = "";
+					}
+				}
+			}
             return ret;
         }
 
@@ -57,17 +64,6 @@ namespace TexasTRInventory
         public static bool IsInternalCompany(Company company)
         {
             return company.IsInternal;
-        }
-
-        //EXP 9.19.17 Gonna get fancy with an extension method
-        public static async Task<SignInResult> PasswordSignInExcludeDisabled(this SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager, string email, string password, bool rememberMe, bool lockoutOnFailure)
-        {
-            if ((await userManager.FindByEmailAsync(email)).IsDisabled)
-            {
-                return SignInResult.NotAllowed;
-            }
-            return await signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure);
         }
 
         public static SelectList CompanyList(InventoryContext context, Company selected = null, bool excludeInternal = true)

@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Collections.ObjectModel;
 
 namespace TexasTRInventory.Controllers
 {
@@ -28,24 +29,41 @@ namespace TexasTRInventory.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
 
-            //EXP 9.14.17 filtering out products that aren't from the user
-
-            //TexasTRInventory.Data.DbInitializer.TrashInitialize(_context);
-            IQueryable<Product> inventoryContext;
+			IQueryable<Product> products;
             if (Utils.IsInternalUser(User))
             {
-                inventoryContext = _context.Products.Include(p => p.Supplier);
+                products = _context.Products.Include(p => p.Supplier);
             }
             else
             {
                 int? supplierID = Utils.SupplierID(User);
-                inventoryContext = _context.Products.Where(p => p.SupplierID == supplierID);
+                products = _context.Products.Where(p => p.SupplierID == supplierID);
             }
 
-            return View(await inventoryContext.ToListAsync());
+            //EXP 9.28.17. Interpreting the sortOrderParam
+            ViewData["SKUSortParm"] = String.IsNullOrEmpty(sortOrder) ? "SKU_desc" : "";
+            ViewData["NameSortParm"] = sortOrder == "name" ? "name_desc" : "name";
+
+            switch (sortOrder)
+            {
+                case "SKU_desc":
+                    products = products.OrderByDescending(p => p.SKU);
+                    break;
+                case "Name":
+                    products = products.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.Name);
+                    break;
+                default:
+                    products = products.OrderBy(s => s.SKU);
+                    break;
+            }
+
+            return View(await products.AsNoTracking().ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -58,7 +76,7 @@ namespace TexasTRInventory.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Supplier)
-                .Include(p => p.ImageFilePath)
+                .Include(p => p.ImageFilePaths)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {
@@ -84,14 +102,23 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile upload,[Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category,LocalFilePath")] Product product)
+        public async Task<IActionResult> Create(IFormFileCollection upload,[Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
-            //EXP 9.26.17 Disallow non-image files
-            FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(upload) };
+			//EXP 9.26.17 Side effect: will mark the model stat as invalid if the file is bad
+			//EXP 10.31.17 TODO: do all uploads in one shot, as a transaction
+			//Intialize the ImageFilePath collection
+			product.ImageFilePaths = new Collection<FilePath>();
+			foreach (IFormFile file in upload){
+				if (!ModelState.IsValid)
+				{
+					break;
+				}
+				FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
+				product.ImageFilePaths.Add(uploadedImage);
+			}
 
             if (ModelState.IsValid)
             {
-                product.ImageFilePath = uploadedImage;
                 product.SupplierID = Utils.IsInternalUser(User) ? product.SupplierID : Utils.SupplierID(User);
                 _context.Add(product);
                 await _context.SaveChangesAsync();
@@ -157,7 +184,7 @@ namespace TexasTRInventory.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Supplier)
-                .Include(p => p.ImageFilePath)
+                .Include(p => p.ImageFilePaths)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {
@@ -178,13 +205,13 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimentions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
-            Product existingProduct = await _context.Products.AsNoTracking()
+            Product existingProduct = await _context.Products
                 .Include(p => p.Supplier)
-                .Include(p => p.ImageFilePath)
+                .Include(p => p.ImageFilePaths)
                 .SingleOrDefaultAsync(m => m.ID == id);
-
+			_context.Entry(existingProduct).State = EntityState.Detached; //If all works well, the filepath will be tracked, but not the product
 
             if (id != product.ID || existingProduct == null)
             {
@@ -195,6 +222,12 @@ namespace TexasTRInventory.Controllers
             {
                 return HiddenProductError();
             }
+
+			//EXP 9.28.17. Handle SupplierID
+			if (!Utils.IsInternalUser(User))
+			{
+				product.SupplierID = existingProduct.SupplierID;
+			}
 
 
             string newFileName = await UploadImageWrapper(upload);
@@ -210,7 +243,7 @@ namespace TexasTRInventory.Controllers
                         filePath.FileName = newFileName; //then wire in the new file
                     }
                     
-                    _context.Update(product); //TODO does this delete the filePath? It shouldn't because it's not saved on the product object
+                    _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -232,7 +265,7 @@ namespace TexasTRInventory.Controllers
 
         private async Task<FilePath> GetEmptyFilePath(Product product)
         {
-            FilePath oldFilePath = product.ImageFilePath;
+			FilePath oldFilePath = null;//just want to to get this to compile product.ImageFilePath;
             
             if (oldFilePath == null)//hitherto there was no image saved
             {
@@ -261,6 +294,7 @@ namespace TexasTRInventory.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Supplier)
+				.Include(p => p.ImageFilePaths)
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (product == null)
             {

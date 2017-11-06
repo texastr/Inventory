@@ -165,7 +165,7 @@ namespace TexasTRInventory.Controllers
         private async Task<string> EmailText(ApplicationUser user)
         {
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            string callbackUrl = Url.Action(nameof(ManageController.SetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            string callbackUrl = Url.Action(nameof(AccountController.SetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
             Company employer = await _context.Companies.FirstOrDefaultAsync(c => c.ID == user.EmployerID);
 
             string explanation = employer.IsInternal ?

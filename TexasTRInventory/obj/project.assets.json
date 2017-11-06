@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     ".NETFramework,Version=v4.5.2": {
       "Antlr/3.4.1.9004": {
@@ -10881,15 +10881,27 @@
   },
   "project": {
     "version": "1.0.0",
+    "restoreSettings": {
+      "hideWarningsAndErrors": true
+    },
     "restore": {
       "projectUniqueName": "C:\\Users\\Posner\\Documents\\Visual Studio 2017\\Projects\\TexasTR\\Inventory\\TexasTRInventory\\TexasTRInventory.csproj",
       "projectName": "TexasTRInventory",
       "projectPath": "C:\\Users\\Posner\\Documents\\Visual Studio 2017\\Projects\\TexasTR\\Inventory\\TexasTRInventory\\TexasTRInventory.csproj",
+      "packagesPath": "C:\\Users\\Posner\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Posner\\Documents\\Visual Studio 2017\\Projects\\TexasTR\\Inventory\\TexasTRInventory\\obj\\",
       "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\Posner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
       "originalTargetFrameworks": [
         "net452"
       ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
       "frameworks": {
         "net452": {
           "projectReferences": {}

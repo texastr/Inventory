@@ -63,6 +63,15 @@ namespace TexasTRInventory
             return Indexer("ASPNETCORE_ENVIRONMENT") == "Development";
         }
 
+		public static int? MinImgFilesCnt()
+		{
+			if (int.TryParse(Indexer("MinImgFilesCnt"), out int ret))
+			{
+				return ret;
+			}
+			return 0;
+		}
+
         static public int GetTexasTRCompanyID(InventoryContext context)
         {
             if(TexasTRCompanyID == null)

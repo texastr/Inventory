@@ -1,33 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
+using TexasTRInventory.Data;
 using TexasTRInventory.Models;
 using TexasTRInventory.Models.AccountViewModels;
 using TexasTRInventory.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using TexasTRInventory.Data;
 
 namespace TexasTRInventory.Controllers
 {
-    [Authorize(Policy = Constants.PolicyNames.IsInternal)]
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
-        //EXP 9.14.17 we need the context, to get the available suppliers
         private readonly InventoryContext _context;
 
         public AccountController(
@@ -35,7 +27,6 @@ namespace TexasTRInventory.Controllers
             SignInManager<ApplicationUser> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
-            //ISmsSender smsSender,
             ILoggerFactory loggerFactory,
             InventoryContext context)
         {
@@ -43,9 +34,33 @@ namespace TexasTRInventory.Controllers
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
-            //_smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
             _context = context;
+        }
+
+        //
+        // GET: /Account/Index
+        [HttpGet]
+        public async Task<IActionResult> Index(ManageMessageId? message = null)
+        {
+            ViewData["StatusMessage"] =
+                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                : message == ManageMessageId.Error ? "An error has occurred."
+                : "";
+
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var model = new IndexViewModel
+            {
+                HasPassword = await _userManager.HasPasswordAsync(user),
+            };
+
+            return View(model);
+
         }
 
         //
@@ -84,8 +99,8 @@ namespace TexasTRInventory.Controllers
                 }
                 if (result.IsNotAllowed)
                 {
-                    _logger.LogWarning(2, "Disabled user attempted to log in");
-                    return View("NotAllowed");
+                    ModelState.AddModelError(string.Empty,"You are not allowed to log in. Ensure you have confirmed your email address.");
+                    return View(model);
                 }
                 else
                 {
@@ -112,24 +127,6 @@ namespace TexasTRInventory.Controllers
         }
 
                 
-        /*// GET: /Account/ConfirmEmail
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            //EXP 9.15.17 not going to actually confirm it until after they've created a password and we're in the setPassword post method.
-            if (userId == null || code == null)
-            {
-                return View("Error");
-            }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return View("Error");
-            }
-            return RedirectToAction(nameof(ManageController.SetPassword)); //This won't work.
-        }*/
-
         //
         // GET: /Account/ForgotPassword
         [HttpGet]
@@ -146,21 +143,26 @@ namespace TexasTRInventory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, $"There is no user associated with the email address{model.Email}");
+            }
+
+            if(!await _userManager.IsEmailConfirmedAsync(user))
+            {//TODO give them the chance to regenerate the token
+                ModelState.AddModelError(string.Empty, "You email address has not yet been confirmed. You must click on the link that was emailed to you before signing in.");
+            }
+
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user))) //TODO: be more nice. tell people if it's an unconfirmed email address
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
-                }
-
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                 await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                   $"Please reset your password by clicking <a href='{callbackUrl}'>here</a>.");
                 return View("ForgotPasswordConfirmation");
             }
 
@@ -226,9 +228,88 @@ namespace TexasTRInventory.Controllers
         //
         // GET /Account/AccessDenied
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+
+        //
+        // GET: /Account/ChangePassword
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        //
+        // POST: /Account/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation(3, "User changed their password successfully.");
+                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });
+                }
+                AddErrors(result);
+                return View(model);
+            }
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+        }
+
+        //
+        // GET: /Account/SetPassword
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SetPassword(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            return View();
+        }
+
+        //
+        // POST: /Account/SetPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SetPassword(SetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.UserID);
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, model.Code);
+                //This line is what makes it safe for AllowAnonymous. If they don't have the code, then they can't set the PWD nor log in
+                if (result.Succeeded)
+                {
+                    //TODO better handling for when things go wrong
+                    result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.SetPasswordSuccess });
+                }
+                AddErrors(result);
+                return View(model);
+            }
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 
         #region Helpers
@@ -241,9 +322,44 @@ namespace TexasTRInventory.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(HomeController.Index),"Home");
+            }
+        }
+
+        private Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            return _userManager.GetUserAsync(HttpContext.User);
+        }
+
+        public enum ManageMessageId
+        {
+            ChangePasswordSuccess,
+            SetPasswordSuccess,
+            Error
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
         }
         #endregion
+    }
+
+    static class AccountExtensions
+    {
+        //EXP 9.19.17 Gonna get fancy with an extension method
+        public static async Task<Microsoft.AspNetCore.Identity.SignInResult> PasswordSignInExcludeDisabled(this SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager, string email, string password, bool rememberMe, bool lockoutOnFailure)
+        {
+            ApplicationUser user = await userManager.FindByEmailAsync(email);
+            if ((user?.IsDisabled ?? false) && await signInManager.CanSignInAsync(user))
+            {
+                return Microsoft.AspNetCore.Identity.SignInResult.Failed;
+            }
+            return await signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure);
+        }
     }
 }

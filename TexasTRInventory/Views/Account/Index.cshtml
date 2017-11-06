@@ -1,4 +1,4 @@
-﻿@model TexasTRInventory.Models.ManageViewModels.IndexViewModel
+﻿@model TexasTRInventory.Models.AccountViewModels.IndexViewModel
 @{
     ViewData["Title"] = "Manage your account";
 }
@@ -14,11 +14,11 @@
         <dd>
             @if (Model.HasPassword)
             {
-                <a asp-controller="Manage" asp-action="ChangePassword" class="btn-bracketed">Change</a>
+                <a asp-controller="Account" asp-action="ChangePassword" class="btn-bracketed">Change</a>
             }
             else
             {
-                <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Create</a>
+                <a asp-controller="Account" asp-action="SetPassword" class="btn-bracketed">Create</a>
             }
         </dd>
     </dl>

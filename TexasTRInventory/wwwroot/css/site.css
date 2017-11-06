@@ -1,5 +1,5 @@
 ﻿body {
-    padding-top: 0px; /*EXP 9.25.17. settign to zero, after discussion with YMP*/
+    padding-top: 0; /*EXP 9.25.17. settign to zero, after discussion with YMP*/
     padding-bottom: 20px;
 }
 
@@ -37,14 +37,34 @@ textarea {
 }
 
 /* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
+    .carousel-inner .item img[src$=".svg"] {
     width: 100%;
 }
+
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
     .carousel-caption {
         display: none;
+    }
+}
+
+/*EXP 10.16.17. Hopefully this will override the boostrap shit and make the details page look better*/
+@media (min-width: 768px) {
+    .dl-horizontal dt {
+        float: left;
+        width: 260px;
+        overflow: hidden;
+        clear: left;
+        text-align: right;
+        text-overflow: ellipsis;
+        white-space: normal;
+        border-top: solid 1px #EEEEEE;
+    }
+
+    .dl-horizontal dd {
+        margin-left: 275px;
+        border-top: solid 1px #EEEEEE;
     }
 }

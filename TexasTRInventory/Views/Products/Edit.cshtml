@@ -13,52 +13,20 @@
         <h4>Product</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="ID" />
+       
         <div class="form-group">
-            <label asp-for="SupplierID" class="control-label col-md-2"></label>
+            <label asp-for="Brand" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="SupplierID" class="form-control" asp-items="ViewBag.SupplierID"></select>
-                <span asp-validation-for="SupplierID" class="text-danger"></span>
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
-            <label class="col-md-2 control-label">Current Photo</label>
-            @if (imageURL != "")
-            {
-                <img class="col-md-10" style="max-height:500px;max-width:500px" src=@imageURL>
-            }
-            else
-            {
-                <span class="col-md-10">No image found</span>
-
-            }
-        </div>
-        <div class="form-group">
-            @Html.Label("EXP This doesn't matter", "Replacement Image", new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <input type="file" id="Photo" name="upload" />
-            </div>
-        </div>
-        
         <div class="form-group">
             <label asp-for="SKU" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="SKU" class="form-control" />
                 <span asp-validation-for="SKU" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PartNumber" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PartNumber" class="form-control" />
-                <span asp-validation-for="PartNumber" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="AmazonASIN" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="AmazonASIN" class="form-control" />
-                <span asp-validation-for="AmazonASIN" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -69,17 +37,17 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Inventory" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Inventory" class="form-control" />
-                <span asp-validation-for="Inventory" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
             <label asp-for="Info" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="Info" class="form-control" />
                 <span asp-validation-for="Info" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PackageContents" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PackageContents" class="form-control" />
+                <span asp-validation-for="PackageContents" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -90,13 +58,6 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Dealer" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Dealer" class="form-control" />
-                <span asp-validation-for="Dealer" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
             <label asp-for="MAP" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="MAP" class="form-control" />
@@ -104,10 +65,10 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Dimentions" class="col-md-2 control-label"></label>
+            <label asp-for="Dimensions" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Dimentions" class="form-control" />
-                <span asp-validation-for="Dimentions" class="text-danger"></span>
+                <input asp-for="Dimensions" class="form-control" />
+                <span asp-validation-for="Dimensions" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -132,19 +93,67 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="PackageContents" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PackageContents" class="form-control" />
-                <span asp-validation-for="PackageContents" class="text-danger"></span>
-            </div>
+            <label class="col-md-2 control-label">Current Photo</label>
+            @if (imageURL != "")
+            {
+                <img class="col-md-10" style="max-height:500px;max-width:500px" src=@imageURL>}
+            else
+            {
+                <span class="col-md-10">No image found</span>
+
+            }
         </div>
         <div class="form-group">
-            <label asp-for="Category" class="col-md-2 control-label"></label>
+            @Html.Label("EXP This doesn't matter", "Replacement Image", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
+                <input type="file" id="Photo" name="upload" />
             </div>
         </div>
+        @if (Utils.IsInternalUser(User))
+        {
+            <div class="form-group">
+                <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="SupplierID" class="form-control" asp-items=ViewBag.SupplierID></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="PartNumber" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="PartNumber" class="form-control" />
+                    <span asp-validation-for="PartNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Inventory" class="form-control" />
+                    <span asp-validation-for="Inventory" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="AmazonASIN" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="AmazonASIN" class="form-control" />
+                    <span asp-validation-for="AmazonASIN" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dealer" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Dealer" class="form-control" />
+                    <span asp-validation-for="Dealer" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Category" class="form-control" />
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+            </div>
+
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
