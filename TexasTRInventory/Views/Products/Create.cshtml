@@ -1,11 +1,16 @@
-@model TexasTRInventory.Models.ProductViewModel
+﻿@model TexasTRInventory.Models.ProductViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
 <script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script> @*TODO maybe load directly from github and fallback on my copy?*@
-<script src="~/js/product.js"></script>
+<script src="~/ts/product.js"></script>
+
+@*not sure what each of these do. But they're recommended by https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation#client-side-validation*@
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 
 <h2>Create</h2>
 <form asp-action="Create" enctype="multipart/form-data" method="post">
@@ -90,17 +95,34 @@
                 <span asp-validation-for="Website" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group" id="fileUploaders">
-            @Html.Label("EXP", TexasTRInventory.Models.ProductViewModel.ImageFilesDisplayName(), new { @class = "control-label col-md-2" })
+        <div style="display:none">
+            <div class="col-md-10" id="fileUploaderTemplate">
+                <span>
+                    <input multiple="" asp-for="ImageFiles" id="fileInputer" onchange="previewFile(this);" style="float:left"/>
+                    <button type="button" onclick="resetField(this);" style="visibility:hidden; float:left">🗙</button>
+                    <script>
+                        var inputField = document.getElementById("fileInputer");
+                        inputField.accept = "image/*";
+                        inputField.removeAttribute("multiple");
+                    </script>
+                </span>
+                <br />
+                <div class="imagePreview" style="clear: both;"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImageFiles" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <div id="dynamicallyGrowingDiv">
+                    <span asp-validation-for="ImageFiles" class="text-danger"></span>
                 </div>
-                <script>initializeFields("dynamicallyGrowingDiv",@GlobalCache.MinImgFilesCnt()); </script>
+                <script>initializeFields("dynamicallyGrowingDiv","fileUploaderTemplate",@GlobalCache.MinImgFilesCnt()); </script>
                 <div class="col-md-10">
-                    <input type="button" onclick="addFileField('dynamicallyGrowingDiv')" value="add more files" />
+                    <input type="button" onclick="addFileField('dynamicallyGrowingDiv','fileUploaderTemplate')" value="add more files" />
                 </div>
             </div>
-         </div>
+        </div>
+
         @if (Utils.IsInternalUser(User))
         {
             <div class="form-group">

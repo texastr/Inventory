@@ -7,6 +7,7 @@ using System.Web.Configuration;
 using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using TexasTRInventory.Models;
 
 namespace TexasTRInventory.Controllers
 {
@@ -16,7 +17,11 @@ namespace TexasTRInventory.Controllers
 
         public IActionResult Index()
         {
-            return View();
+			//Good stop to put trash that I want to trip the debugger
+			ProductViewModel pvm = new ProductViewModel() { Brand = "brand string", SKU = "sku string" };
+			Product product = new Product(pvm);
+
+			return View();
         }
 
         public IActionResult Error()

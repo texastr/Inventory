@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TexasTRInventory.Models
 {
@@ -65,20 +67,23 @@ namespace TexasTRInventory.Models
 		/*the retailer specific information I'll do later
         B&H,Adorama,Sammys,eBay,New Egg, Walmart, Walmart DSV,Jet.com,Vendor - Drop ship, Vendor USA,Vendor Canada
         */
-		public virtual IFormFileCollection ImageFilePaths { get; set;}
+		[DisplayName("Upload Your Product Photos - 上传产品图片")]
+		[SufficientImages]
+		public IFormFileCollection ImageFiles { get; set;} //Maybe rename?
 
-		public static string ImageFilesDisplayName()
-		{
-			return "Upload Your Product Photos - 上传产品图片";
-		}
+		[DisplayName("Previously Uploaded Photos -- WTF is that in Chinese?")]
+		public ICollection<FilePath> OldFilePaths { get; set; }
+
+
+		
     }
-	public class SufficientImagesAttribute : ValidationAttribute//, IClientModelValidator
+	public class SufficientImagesAttribute : ValidationAttribute, IClientModelValidator
 	{
 		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 		{
-			ICollection<FilePath> images = ((Product)validationContext.ObjectInstance)?.ImageFilePaths;
+			IFormFileCollection input = (IFormFileCollection)value;
 
-			if (images?.Count >= GlobalCache.MinImgFilesCnt())
+			if (input?.Count >= GlobalCache.MinImgFilesCnt())
 			{
 				return ValidationResult.Success;
 			}
@@ -86,6 +91,29 @@ namespace TexasTRInventory.Models
 			{
 				return new ValidationResult($"A minimum of {GlobalCache.MinImgFilesCnt()} images are required");
 			}
+		}
+
+		void IClientModelValidator.AddValidation(ClientModelValidationContext context)
+		{
+			if (context == null)
+			{
+				throw new ArgumentNullException(nameof(context));
+			}
+
+			MergeAttribute(context.Attributes, "data-val","true");//not sure what this line does.
+			MergeAttribute(context.Attributes, "data-val-sufficentimages", "this is the error message I'll define");
+			MergeAttribute(context.Attributes, "data-val-sufficientimagescnt", GlobalCache.MinImgFilesCnt().ToString());
+		}
+
+		private bool MergeAttribute(IDictionary<string, string> attributes, string key, string value)
+		{
+			if (attributes.ContainsKey(key))
+			{
+				return false;
+			}
+
+			attributes.Add(key, value);
+			return true;
 		}
 	}
 

@@ -15,12 +15,46 @@ using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Html;
+using System.Reflection;
 
 namespace TexasTRInventory
 {
     public static class Utils
     {
-		//Maybe this should be deleted. it isn't working how I hoped it would work
+		public static Dictionary<string,PropertyInfo> getPropertyInfoByName(Type type)
+		{
+			Dictionary<string, PropertyInfo> ret = new Dictionary<string, PropertyInfo>();
+			foreach (PropertyInfo pi in type.GetProperties())
+			{
+				ret.Add(pi.Name, pi);
+			}
+
+			return ret;
+		}
+
+		public static D ModelMapper<D,S>(D destination, S source, params string[] excludedPropertyNamesAry)
+		{
+			var sourceProperties = Utils.getPropertyInfoByName(typeof(S));
+
+			var excludedPropertyNamesSet = new HashSet<string>(excludedPropertyNamesAry);
+
+			foreach (PropertyInfo pi in typeof(D).GetProperties())
+			{
+				string propName = pi.Name;
+				if (excludedPropertyNamesSet.Contains(propName))
+				{
+					continue;
+				}
+
+				var propValue = sourceProperties[propName].GetValue(source);
+				pi.SetValue(destination, propValue);
+			}
+
+
+			return destination;
+		}
+
+
 		public static IHtmlContent QuotedString(this IHtmlHelper htmlHelper, string arg)
 		{
 			return htmlHelper.Raw("\"" + arg + "\"");

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace TexasTRInventory.Models
 {
@@ -65,5 +66,24 @@ namespace TexasTRInventory.Models
         B&H,Adorama,Sammys,eBay,New Egg, Walmart, Walmart DSV,Jet.com,Vendor - Drop ship, Vendor USA,Vendor Canada
         */
 		public virtual ICollection<FilePath> ImageFilePaths { get; set;}
+
+		public Product() { }
+
+		public Product(ProductViewModel pvm)
+		{
+			var viewModelProperties = Utils.getPropertyInfoByName(pvm.GetType());
+			foreach (PropertyInfo pi in typeof(Product).GetProperties())
+			{
+				if(pi.Name == nameof(ID) || pi.Name == nameof(ImageFilePaths))
+				{
+					continue;
+					//ID is set by the database, and ImageFilePaths are set differently.
+				}
+
+				string propName = pi.Name;
+				var propValue = viewModelProperties[propName].GetValue(pvm);
+				pi.SetValue(this, propValue);
+			}
+		}
     }
 }

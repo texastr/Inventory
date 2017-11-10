@@ -102,19 +102,22 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFileCollection upload,[Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Create (ProductViewModel product)//Create(IFormFileCollection upload,[Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
         {
 			//EXP 9.26.17 Side effect: will mark the model stat as invalid if the file is bad
 			//EXP 10.31.17 TODO: do all uploads in one shot, as a transaction
 			//Intialize the ImageFilePath collection
-			product.ImageFilePaths = new Collection<FilePath>();
-			foreach (IFormFile file in upload){
+			//product.ImageFilePaths = new Collection<FilePath>();
+
+			if(!ModelState.IsValid)return ViewWithSupplierList(); ;
+
+			foreach (IFormFile file in product.ImageFiles/*upload*/){
 				if (!ModelState.IsValid)
 				{
 					break;
 				}
 				FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
-				product.ImageFilePaths.Add(uploadedImage);
+				//product.ImageFilePaths.Add(uploadedImage);
 			}
 
             if (ModelState.IsValid)
@@ -131,7 +134,7 @@ namespace TexasTRInventory.Controllers
         {
             if (upload != null)
             {
-                if (upload.ContentType.StartsWith("image/"))
+                if (upload.ContentType.StartsWith("image/")) //TODO have an attribute on the model check that it's an image
                 {
                     try
                     {

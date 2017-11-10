@@ -5,6 +5,7 @@
     <TargetFramework>net452</TargetFramework>
     <!--<TargetFramework>netcoreapp2.0</TargetFramework>-->
     <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -53,6 +54,9 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\ts\product.ts" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4lib_4bootstrap_4dist_4css_4bootstrap_1css_1map__JSONSchema="http://json.schemastore.org/vega" /></VisualStudio></ProjectExtensions>
 
