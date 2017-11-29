@@ -89,7 +89,7 @@ namespace TexasTRInventory.Models
 			}
 			else
 			{
-				return new ValidationResult($"A minimum of {GlobalCache.MinImgFilesCnt()} images are required");
+				return new ValidationResult($"A minimum of {GlobalCache.MinImgFilesCnt()} images are required.");
 			}
 		}
 
@@ -101,8 +101,8 @@ namespace TexasTRInventory.Models
 			}
 
 			MergeAttribute(context.Attributes, "data-val","true");//not sure what this line does.
-			MergeAttribute(context.Attributes, "data-val-sufficentimages", "this is the error message I'll define");
-			MergeAttribute(context.Attributes, "data-val-sufficientimagescnt", GlobalCache.MinImgFilesCnt().ToString());
+			MergeAttribute(context.Attributes, "data-val-sufficientimages", "this is the error message defined in the view model class");
+			MergeAttribute(context.Attributes, "data-val-sufficientimages-cnt", GlobalCache.MinImgFilesCnt().ToString());
 		}
 
 		private bool MergeAttribute(IDictionary<string, string> attributes, string key, string value)

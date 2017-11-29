@@ -4,13 +4,14 @@
     ViewData["Title"] = "Create";
 }
 
-<script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script> @*TODO maybe load directly from github and fallback on my copy?*@
-<script src="~/ts/product.js"></script>
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+<script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script> @*TODO maybe load directly from the internet and fallback on my copy?*@
 
 @*not sure what each of these do. But they're recommended by https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation#client-side-validation*@
-<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
-<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.js"></script> @*temporarly replacing .min.js with .js*@
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.js"></script>
+<script src="~/ts/product.js"></script>
 
 <h2>Create</h2>
 <form asp-action="Create" enctype="multipart/form-data" method="post">
@@ -98,7 +99,7 @@
         <div style="display:none">
             <div class="col-md-10" id="fileUploaderTemplate">
                 <span>
-                    <input multiple="" asp-for="ImageFiles" id="fileInputer" onchange="previewFile(this);" style="float:left"/>
+                    <input multiple="" asp-for="ImageFiles" id="fileInputer" onchange="previewFile(this);" style="float:left" class="sufficientimages"/>
                     <button type="button" onclick="resetField(this);" style="visibility:hidden; float:left">🗙</button>
                     <script>
                         var inputField = document.getElementById("fileInputer");
@@ -114,11 +115,11 @@
             <label asp-for="ImageFiles" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <div id="dynamicallyGrowingDiv">
-                    <span asp-validation-for="ImageFiles" class="text-danger"></span>
                 </div>
                 <script>initializeFields("dynamicallyGrowingDiv","fileUploaderTemplate",@GlobalCache.MinImgFilesCnt()); </script>
                 <div class="col-md-10">
                     <input type="button" onclick="addFileField('dynamicallyGrowingDiv','fileUploaderTemplate')" value="add more files" />
+                    <div><span asp-validation-for="ImageFiles" class="text-danger"></span></div>
                 </div>
             </div>
         </div>

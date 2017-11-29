@@ -136,11 +136,10 @@ c:\users\posner\documents\visual studio 2017\Projects\TexasTRRightProjectType\Te
 c:\users\posner\documents\visual studio 2017\Projects\TexasTRRightProjectType\TexasTRInventory\bin\Debug\net452\win7-x86\SendGrid.dll
 c:\users\posner\documents\visual studio 2017\Projects\TexasTRRightProjectType\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.exe
 c:\users\posner\documents\visual studio 2017\Projects\TexasTRRightProjectType\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.pdb
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.exe.config
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.deps.json
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.runtimeconfig.json
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.runtimeconfig.dev.json
-C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csproj.TexasTRInventory.exe.config
-C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.exe.config
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.exe
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\TexasTRInventory.pdb
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\libuv.dll
@@ -310,8 +309,9 @@ C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRI
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.OData.resources.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\Microsoft.Data.Services.Client.resources.dll
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\bin\Debug\net452\win7-x86\System.Spatial.resources.dll
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csprojResolveAssemblyReference.cache
+C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csproj.TexasTRInventory.exe.config
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csproj.CoreCompileInputs.cache
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.AssemblyInfo.cs
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.exe
 C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.pdb
-C:\Users\Posner\Documents\Visual Studio 2017\Projects\TexasTR\Inventory\TexasTRInventory\obj\Debug\net452\win7-x86\TexasTRInventory.csprojResolveAssemblyReference.cache

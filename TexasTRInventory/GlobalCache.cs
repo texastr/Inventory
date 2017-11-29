@@ -19,7 +19,7 @@ namespace TexasTRInventory
     {
         private static NameValueCollection secondConfig;
         private static IConfiguration firstConfig;
-        private static CloudBlobContainer BlobContainer;
+        private static Dictionary<string,CloudBlobContainer> BlobContainers;
         private static int? TexasTRCompanyID;
         private static KeyVaultClient keyVaultClient;
         private static Dictionary<string, string> secrets;
@@ -83,19 +83,52 @@ namespace TexasTRInventory
             return (int)TexasTRCompanyID;
         }
 
-        static async public Task<CloudBlockBlob> GetBlob(string fileName)
+		//erstwhile way to get container name
+		//BlobContainer = client.GetContainerReference(Indexer("ContainerName"));
+		static async public Task<CloudBlockBlob> GetImageBlob(string fileName)
         {
-           if (BlobContainer == null)
-            {
-                string blobKey = await GetSecret("AzureBlobKey");
-                StorageCredentials credentials = new StorageCredentials(Indexer("AzureName"), blobKey);
-                CloudStorageAccount account = new CloudStorageAccount(credentials, true);
-                CloudBlobClient client = account.CreateCloudBlobClient();
-                BlobContainer = client.GetContainerReference(Indexer("ContainerName"));
-            }
-
-            return BlobContainer.GetBlockBlobReference(fileName);
+			string containerName = Indexer("ImageContainerName");
+			return await GetBlob(fileName, containerName);
         }
+
+		static async public Task<CloudBlockBlob> GetCSVBlob(string fileName)
+		{
+			string containerName = Indexer("CSVContainerName");
+			return await GetBlob(containerName, fileName);
+
+		}
+
+		static async public Task<CloudBlobContainer> GetCSVContainer()
+		{
+			return await GetContainer(Indexer("CSVContainerName"));
+		}
+
+
+		static async private Task<CloudBlobContainer> GetContainer(string containerName)
+		{
+			if (BlobContainers == null)
+			{
+				BlobContainers = new Dictionary<string, CloudBlobContainer>();
+			}
+
+			if (!BlobContainers.ContainsKey(containerName))
+			{
+				string blobKey = await GetSecret("AzureBlobKey");
+				StorageCredentials credentials = new StorageCredentials(Indexer("AzureName"), blobKey);
+				CloudStorageAccount account = new CloudStorageAccount(credentials, true);
+				CloudBlobClient client = account.CreateCloudBlobClient();
+				CloudBlobContainer ret = client.GetContainerReference(containerName);
+				BlobContainers.Add(containerName, ret);
+			}
+
+			return BlobContainers[containerName];
+		}
+
+		static async private Task<CloudBlockBlob> GetBlob(string containerName, string fileName)
+		{
+			CloudBlobContainer container = await GetContainer(containerName);
+			return container.GetBlockBlobReference(fileName);
+		}
 
         //EXP 9.2.17
         static async public Task<string> GetSecret(string secretName)

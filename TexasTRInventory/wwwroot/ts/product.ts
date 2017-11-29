@@ -53,6 +53,12 @@ function resetField(element) {
     //lastly, let's hide the button.
     element.style.visibility = "hidden";
 
+    //jk. the actual last thing is to trigger validation
+    //(JQuery as any).validator.unobtrusive.parse(document);
+    if (($('#fileInputer') as any).valid()) {
+
+    }
+
 
 }
 
@@ -67,29 +73,31 @@ function displayImageFromURL(URL,divName){
     let img = loadImage(URL, callbacker, options);
 }
 
-
-/*
-
-//Trying to do the client-side validation that there are enough files
-$(function () {
-
-
-
-    jQuery.validator.addMethod('IthinkThisIsTheNameOfThePropertyOrSomething',
+//this makes the client-side validation work to count that there are five files. Some mix of MS, Michael, SO, and moi
+(jQuery as any)(document).ready(function ($) {
+    (jQuery as any).validator.addMethod('sufficientimages',
         function (value, element, params) {
-            alert('In this function I have my logic for determining whether it is a pass or fail');
+            let elems: HTMLCollectionOf<Element> = document.getElementsByClassName("sufficientimages");
+            let cnt: number = elems.length;
+            let minFiles: number = params.cnt;
+            let filesCnt: number = 0;
+            for (let i: number = 0; i < cnt; i++) {
+                let elem: HTMLInputElement = <HTMLInputElement >elems.item(i);
+                if (elem.value !== null && elem.value.length > 0) {
+                    filesCnt++;
+                }
+            }
+            return filesCnt >= minFiles;
         });
 
-    jQuery.validator.unobtrusive.adapters.add('SamePropertyNameAsBefore',
-        ['element', 'year'],
+    (jQuery as any).validator.unobtrusive.adapters.add('sufficientimages',
+        ['cnt'], //No idea what this parameter does. But shit breaks if it's messed with
         function (options) {
-            
-            var element = $(options.form).find('select#Genre')[0];
-            options.rules['classicmovie'] = [element, parseInt(options.params['year'])];
-            options.messages['classicmovie'] = options.message;
-            
+            options.rules['sufficientimages'] = [options.params.cnt];
+            options.messages['sufficientimages'] = options.message;
+
         });
-}/*(jQuery));*/ //Why did I need to comment this out?
+});
 
 //region: trash
 

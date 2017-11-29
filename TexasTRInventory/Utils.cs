@@ -21,7 +21,7 @@ namespace TexasTRInventory
 {
     public static class Utils
     {
-		public static Dictionary<string,PropertyInfo> getPropertyInfoByName(Type type)
+		public static Dictionary<string,PropertyInfo> GetPropertyInfoByName(Type type)
 		{
 			Dictionary<string, PropertyInfo> ret = new Dictionary<string, PropertyInfo>();
 			foreach (PropertyInfo pi in type.GetProperties())
@@ -34,7 +34,7 @@ namespace TexasTRInventory
 
 		public static D ModelMapper<D,S>(D destination, S source, params string[] excludedPropertyNamesAry)
 		{
-			var sourceProperties = Utils.getPropertyInfoByName(typeof(S));
+			var sourceProperties = Utils.GetPropertyInfoByName(typeof(S));
 
 			var excludedPropertyNamesSet = new HashSet<string>(excludedPropertyNamesAry);
 
@@ -70,7 +70,7 @@ namespace TexasTRInventory
 				{
 					try
 					{
-						ret[i] = (await GlobalCache.GetBlob(fileName)).Uri.AbsoluteUri;
+						ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
 					}
 					catch
 					{

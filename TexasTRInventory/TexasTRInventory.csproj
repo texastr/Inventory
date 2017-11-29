@@ -17,6 +17,10 @@
   <ItemGroup>
     <None Remove="Properties\PublishProfiles\TexasTRInventory - Web Deploy.pubxml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="node_modules\%40types\jquery\package.json" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.5.357" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
@@ -56,6 +60,9 @@
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="node_modules\%40types\jquery\index.d.ts" />
+    <None Include="node_modules\%40types\jquery\LICENSE" />
+    <None Include="node_modules\%40types\jquery\README.md" />
     <None Include="wwwroot\ts\product.ts" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4lib_4bootstrap_4dist_4css_4bootstrap_1css_1map__JSONSchema="http://json.schemastore.org/vega" /></VisualStudio></ProjectExtensions>

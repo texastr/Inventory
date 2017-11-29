@@ -159,7 +159,7 @@ namespace TexasTRInventory.Controllers
         private async Task<string> UploadFile(IFormFile upload)
         {
             string newFileName = UniqueFileName(upload.FileName);
-            CloudBlockBlob blob = await GlobalCache.GetBlob(newFileName);
+            CloudBlockBlob blob = await GlobalCache.GetImageBlob(newFileName);
             blob.Properties.ContentType = upload.ContentType;
 
             using (Stream intermediateMemory = new MemoryStream())
@@ -280,7 +280,7 @@ namespace TexasTRInventory.Controllers
             string oldFileName = oldFilePath.FileName;
             if (!string.IsNullOrWhiteSpace(oldFileName))
             {
-                CloudBlockBlob blob = await GlobalCache.GetBlob(oldFileName); //delete the old file
+                CloudBlockBlob blob = await GlobalCache.GetImageBlob(oldFileName); //delete the old file
                 await blob.DeleteIfExistsAsync();
             }
 
@@ -331,7 +331,7 @@ namespace TexasTRInventory.Controllers
                 //This will be wasteful. Only significant if we have many images for a product
                 if (!String.IsNullOrEmpty(fp.FileName))
                 {
-                    CloudBlockBlob blob = await GlobalCache.GetBlob(fp.FileName);
+                    CloudBlockBlob blob = await GlobalCache.GetImageBlob(fp.FileName);
                     await blob.DeleteIfExistsAsync();
                 }
             }

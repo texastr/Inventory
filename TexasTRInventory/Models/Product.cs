@@ -71,19 +71,7 @@ namespace TexasTRInventory.Models
 
 		public Product(ProductViewModel pvm)
 		{
-			var viewModelProperties = Utils.getPropertyInfoByName(pvm.GetType());
-			foreach (PropertyInfo pi in typeof(Product).GetProperties())
-			{
-				if(pi.Name == nameof(ID) || pi.Name == nameof(ImageFilePaths))
-				{
-					continue;
-					//ID is set by the database, and ImageFilePaths are set differently.
-				}
-
-				string propName = pi.Name;
-				var propValue = viewModelProperties[propName].GetValue(pvm);
-				pi.SetValue(this, propValue);
-			}
+			Utils.ModelMapper<Product, ProductViewModel>(this, pvm, nameof(ID), nameof(ImageFilePaths));
 		}
     }
 }
