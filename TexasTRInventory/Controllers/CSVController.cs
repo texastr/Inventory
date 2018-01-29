@@ -12,16 +12,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TexasTRInventory.Controllers
 {
-
-	public class CSVController : Controller
+    [Authorize(Policy = Constants.PolicyNames.IsInternal)]
+    public class CSVsController : Controller
 	{
 		//We need some blob stuff, and that should be put in using DI. But we cannot. I forgot why. But I remember that it was a formidible technical challenge
 		private readonly InventoryContext _context;
 
-		public CSVController(InventoryContext context)
+		public CSVsController(InventoryContext context)
 		{
 			_context = context;
 		}
@@ -29,7 +30,7 @@ namespace TexasTRInventory.Controllers
 
 
 
-		// GET: CSV
+		// GET: CSVs
 		public async Task<IActionResult> Index()
 		{
 
@@ -44,25 +45,33 @@ namespace TexasTRInventory.Controllers
 			}
 
 			CSVs.Sort((x,y) => DateTimeOffset.Compare((DateTimeOffset)(x.Modified), (DateTimeOffset)(y.Modified)));
-			CSVList csvsInTheTypeYouFuckersWant = new CSVList() { TheOnlyField = CSVs }; //This line is stupid, but necessary. If it makes the code work, it'll be worth it.
-			return View(csvsInTheTypeYouFuckersWant);
+
+            return View(CSVs);
 		}
 	
 		// GET: CSVs/Create
 		public async Task<IActionResult> Create()
 		{
 			StringBuilder file = new StringBuilder();
-			//Get the column headers
-
-			foreach(PropertyInfo pi in typeof(Product).GetProperties())
+            //Get the column headers
+            
+			foreach(PropertyInfo pi in typeof(ProductDBModel).GetProperties())
 			{
-				file.Append(pi.Name);
+                //When it starts with capital ID, it makes Excel throw errors. I don't want to make my code ugly because MS Excel is stupid. But I will.
+                if (pi.Name=="ID")
+                {
+                    file.Append("Product ID,");
+                    continue;
+                }
+
+                file.Append(pi.Name);
 				file.Append(',');
 			}
+            file.Remove(file.Length - 1, 1);
 
-			file.Append('\n');
+            file.Append('\n');
 
-			foreach (Product product in _context.Products.AsNoTracking())
+			foreach (ProductDBModel product in _context.Products.AsNoTracking())
 			{
 				AppendProduct(product, ref file);
 				file.Append('\n');
@@ -72,46 +81,68 @@ namespace TexasTRInventory.Controllers
 
 			//Got the file in a long string. let's get it into a file
 			CloudBlockBlob blob = await GlobalCache.GetCSVBlob(CSVFileName());
-			blob.UploadText(file.ToString());
-			
+            blob.Properties.ContentType = "text/csv";
+            blob.UploadText(file.ToString());
+            
 			return RedirectToAction("Index");
 		}
 
-		private void AppendProduct(Product product, ref StringBuilder sb)
+		private void AppendProduct(ProductDBModel product, ref StringBuilder sb)
 		{
 			foreach (PropertyInfo pi in product.GetType().GetProperties())
 			{
 				var val = pi.GetValue(product);
-				sb.Append(val);
-				sb.Append(',');
+                AppendCell(sb, val.ToString());
 			}
 
 			sb.Remove(sb.Length - 1, 1);
 		}
 
-		private string CSVFileName()
+        //Copied from https://stackoverflow.com/questions/6377454/escaping-tricky-string-to-csv-format
+        private void AppendCell(StringBuilder sb, string value)
+        {
+            bool mustQuote = (value.Contains(',')
+                            || value.Contains('\"')
+                            || value.Contains('\r')
+                            || value.Contains('\n'));
+
+            if (mustQuote)
+            {
+                sb.Append('\"');
+                foreach (char nextChar in value)
+                {
+                    sb.Append(nextChar);
+                    if (nextChar == '"') sb.Append('\"');
+                }
+                sb.Append('\"');
+            }
+            else
+            {
+                sb.Append(value);
+            }
+        }
+
+        private string CSVFileName()
 		{
-			return DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff");
+			return DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff")+".csv";
 		}
 
-		//POST: CSV
+		//POST: CSVs
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Index(CSVList model)
+		public async Task<IActionResult> Index(List<CSVViewModel> CSVList)
 		{
-			List<CSVViewModel> CSVs = new List<CSVViewModel>();
-			/*CloudBlobContainer blobs = await GlobalCache.GetCSVContainer();
-			foreach (IListBlobItem blob in blobs.ListBlobs())
-			{
-				if (blob.GetType() == typeof(CloudBlockBlob))
-				{
-					CSVs.Add(new CSVViewModel((CloudBlockBlob)blob));
-				}
-			}
-
-			CSVs.Sort((x, y) => DateTimeOffset.Compare((DateTimeOffset)(x.Modified), (DateTimeOffset)(y.Modified)));
-			*/
-			return View(CSVs);
+			for(int i=CSVList.Count-1; i>=0; i--)//I'm so clever. If I iterate backwards, I can modify the list while I'm iterating.
+            {
+                CSVViewModel file = CSVList[i];
+                if (file.ShouldBeDeleted)
+                {
+                    CloudBlockBlob blob = await GlobalCache.GetCSVBlob(file.Name);
+                    await blob.DeleteIfExistsAsync();
+                    CSVList.RemoveAt(i);
+                }
+            }
+            return View(CSVList);
 		}
 	}
 }

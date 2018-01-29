@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
+using TexasTRInventory.Constants;
 
 namespace TexasTRInventory
 {
@@ -30,18 +31,13 @@ namespace TexasTRInventory
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                //EXP 9.11.17 See if I can get rid of user secret store stuff and replace with azure key stuff.
-                /*;
-
-            if (env.IsDevelopment())
-            {
-                // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets<Startup>();
-            }
-            builder*/.AddEnvironmentVariables();
+                .AddEnvironmentVariables();
             Configuration = builder.Build();
 
             GlobalCache.Initialize(Configuration, WebConfigurationManager.AppSettings);
+
+            //For every class that uses my triple-model pattern (abstract, view, and db) call their mapper intializer here
+            Product.MapperInitializer();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -109,14 +105,18 @@ namespace TexasTRInventory
 
             //EXP 9.11.17 https://docs.microsoft.com/en-us/aspnet/core/security/authorization/secure-data
             //Allows the authorization handlers to work
-            services.AddScoped<IAuthorizationHandler, InternalUserAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, InternalUserAuthorizationHandler>(); //EXP 12.7.17. Changing to Singleton. Should be good
+            //EXP 12.7.17 adding another handler
+            services.AddScoped<IAuthorizationHandler, TooBig4YourBritchesAuthorizationHandler>();
 
 
             //EXP 9.20.17. I think the scopeds above are wrong. this is how to do it.
             //https://stackoverflow.com/questions/31464359/how-do-you-create-a-custom-authorizeattribute-in-asp-net-core
             services.Configure<AuthorizationOptions>(options =>
             {
-                options.AddPolicy(Constants.PolicyNames.IsInternal, policy => policy.Requirements.Add(new InternalUserAuthorizationHandler()));
+                options.AddPolicy(PolicyNames.IsInternal, policy => policy.Requirements.Add(new InternalUserAuthorizationHandler()));
+                options.AddPolicy(PolicyNames.OnlyAdminsEditAdmins, policy => policy.Requirements.Add(new TooBig4YourBritchesAuthorizationHandler()));
+
             });
 
             //EXP 9.15.17 Don't understand, but apparently this is good for security
@@ -142,7 +142,7 @@ namespace TexasTRInventory
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage(); //EXP 9.1.17 putting it back in //commenting this out, because it's causing errors. This maybe a bad idea.
+                app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
             else

@@ -8,6 +8,7 @@ using System.Web.Configuration;
 using Microsoft.AspNetCore.Identity;
 using TexasTRInventory.Models;
 using TexasTRInventory.Data;
+using TexasTRInventory.Constants;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
@@ -32,13 +33,18 @@ namespace TexasTRInventory
 			return ret;
 		}
 
-		public static D ModelMapper<D,S>(D destination, S source, params string[] excludedPropertyNamesAry)
+        /*EXP. Now relying on third party to do it.
+        public static D ModelMapper<D,S>(D destination, S source, params string[] excludedPropertyNamesAry)
 		{
-			var sourceProperties = Utils.GetPropertyInfoByName(typeof(S));
+			Dictionary<string,PropertyInfo> sourceProperties = Utils.GetPropertyInfoByName(typeof(S));
 
-			var excludedPropertyNamesSet = new HashSet<string>(excludedPropertyNamesAry);
+            PropertyInfo[] destinationProperties = typeof(D).GetProperties();
 
-			foreach (PropertyInfo pi in typeof(D).GetProperties())
+            IEnumerable<PropertyInfo> iter = sourceProperties.Values.Intersect(destinationProperties);
+
+            HashSet<string> excludedPropertyNamesSet = new HashSet<string>(excludedPropertyNamesAry);
+
+            foreach (PropertyInfo pi in iter)
 			{
 				string propName = pi.Name;
 				if (excludedPropertyNamesSet.Contains(propName))
@@ -53,51 +59,49 @@ namespace TexasTRInventory
 
 			return destination;
 		}
-
+        */
 
 		public static IHtmlContent QuotedString(this IHtmlHelper htmlHelper, string arg)
 		{
 			return htmlHelper.Raw("\"" + arg + "\"");
 		}
 
-		public static async Task<string[]> GetImageURLs(Product product)
-        {
-			string[] ret = new string[product.ImageFilePaths.Count];
-			for(int i = 0; i < ret.Length; i++)
-			{
-				string fileName = product.ImageFilePaths.ElementAt(i)?.FileName;
-				if (!String.IsNullOrEmpty(fileName))
-				{
-					try
-					{
-						ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
-					}
-					catch
-					{
-						//If we can't get the image, just return null. NBD
-						ret[i] = "";
-					}
-				}
-			}
-            return ret;
-        }
-
         public static bool IsInternalUser(ClaimsPrincipal user)
         {
             //EXP 9.20.17 no more roles. Everything is supplier.
-            return user.HasClaim(Constants.ClaimTypes.IsInternal, true.ToString());
+            return user.HasClaim(ClaimNames.IsInternal, true.ToString());
             //return user.IsInRole(Constants.Roles.InternalUser);
+        }
+        
+        public static bool IsAdmin(ClaimsPrincipal user)
+        {
+            return user.HasClaim(ClaimNames.IsAdmin, true.ToString());
+        }
+        
+        public static bool CanUserEditUser(ClaimsPrincipal cp, ApplicationUser au)
+        {
+            if (!IsInternalUser(cp))
+            {
+                return false;
+            }
+            if (!au.IsAdmin)
+            {
+                //Any internal can delete a non-admin
+                return true;
+            }
+            if (!IsAdmin(cp))
+            {
+                //a non-admin is trying to delete an admin! that's bad!
+                return false;
+            }
+            //If we make it here, the user is internal, an admin, trying to delete an admin. wtf. Let him do it. let them squabble
+            return true;
         }
 
         public static int SupplierID (ClaimsPrincipal user)
         {
-            int.TryParse(user.FindFirst(Constants.ClaimTypes.EmployerID).Value, out int ret);
+            int.TryParse(user.FindFirst(ClaimNames.EmployerID).Value, out int ret);
             return ret;
-        }
-
-        public static bool IsInternalCompany(Company company)
-        {
-            return company.IsInternal;
         }
 
         public static SelectList CompanyList(InventoryContext context, Company selected = null, bool excludeInternal = true)
@@ -165,8 +169,9 @@ namespace TexasTRInventory
         {
             var principal = await base.CreateAsync(user);
             ((ClaimsIdentity)principal.Identity).AddClaims(new[] {
-                new Claim(Constants.ClaimTypes.IsInternal,(user.EmployerID==GlobalCache.GetTexasTRCompanyID(_context)).ToString()),
-                new Claim(Constants.ClaimTypes.EmployerID,user.EmployerID.ToString())
+                new Claim(ClaimNames.IsInternal,(user.EmployerID==GlobalCache.GetTexasTRCompanyID(_context)).ToString()),
+                new Claim(ClaimNames.EmployerID,user.EmployerID.ToString()),
+                new Claim(ClaimNames.IsAdmin,user.IsAdmin.ToString())
             });
             return principal;
         }

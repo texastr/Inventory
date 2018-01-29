@@ -23,6 +23,7 @@ namespace TexasTRInventory
         private static int? TexasTRCompanyID;
         private static KeyVaultClient keyVaultClient;
         private static Dictionary<string, string> secrets;
+        private static Dictionary<CloudBlobContainer, (SharedAccessBlobPolicy, string)> SASs;
         
         static GlobalCache()
         {
@@ -87,24 +88,28 @@ namespace TexasTRInventory
 		//BlobContainer = client.GetContainerReference(Indexer("ContainerName"));
 		static async public Task<CloudBlockBlob> GetImageBlob(string fileName)
         {
-			string containerName = Indexer("ImageContainerName");
-			return await GetBlob(fileName, containerName);
+            CloudBlobContainer container = await GetImageContainer();
+            return container.GetBlockBlobReference(fileName);
         }
 
 		static async public Task<CloudBlockBlob> GetCSVBlob(string fileName)
 		{
-			string containerName = Indexer("CSVContainerName");
-			return await GetBlob(containerName, fileName);
+            CloudBlobContainer container = await GetCSVContainer();
+            return container.GetBlockBlobReference(fileName);
 
-		}
+        }
 
 		static async public Task<CloudBlobContainer> GetCSVContainer()
 		{
-			return await GetContainer(Indexer("CSVContainerName"));
+			return await GetContainer(Indexer("CSVContainerName"), BlobContainerPublicAccessType.Off);
 		}
 
+        static async public Task<CloudBlobContainer> GetImageContainer()
+        {
+            return await GetContainer(Indexer("ImageContainerName"), BlobContainerPublicAccessType.Blob);
+        }
 
-		static async private Task<CloudBlobContainer> GetContainer(string containerName)
+        static async private Task<CloudBlobContainer> GetContainer(string containerName, BlobContainerPublicAccessType permissionsIfCreating)
 		{
 			if (BlobContainers == null)
 			{
@@ -118,23 +123,22 @@ namespace TexasTRInventory
 				CloudStorageAccount account = new CloudStorageAccount(credentials, true);
 				CloudBlobClient client = account.CreateCloudBlobClient();
 				CloudBlobContainer ret = client.GetContainerReference(containerName);
+                if(await ret.CreateIfNotExistsAsync())
+                {
+                    //https://docs.microsoft.com/en-us/azure/storage/blobs/storage-manage-access-to-resources
+                    BlobContainerPermissions permissions = ret.GetPermissions();
+                    permissions.PublicAccess = permissionsIfCreating;
+                    ret.SetPermissions(permissions);
+                }
 				BlobContainers.Add(containerName, ret);
 			}
 
 			return BlobContainers[containerName];
 		}
 
-		static async private Task<CloudBlockBlob> GetBlob(string containerName, string fileName)
-		{
-			CloudBlobContainer container = await GetContainer(containerName);
-			return container.GetBlockBlobReference(fileName);
-		}
-
         //EXP 9.2.17
         static async public Task<string> GetSecret(string secretName)
         {
-            //EXP 9.13.17. Handling the disabling of our vault :(
-            if (secretName == Constants.SecretNames.AdminInitializer) return "fireworks";
 
             if (!secrets.ContainsKey(secretName))
             {
@@ -159,6 +163,39 @@ namespace TexasTRInventory
 
             return result.AccessToken;
         }
+
+        #region SAS Stuff
+        public async static Task<string> GetCsvSas()
+        {
+            CloudBlobContainer container = await GetCSVContainer();
+            string ret = GetContainerSas(container);
+            return ret;
+        }
+        
+        //Copied from https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1
+        private static string GetContainerSas(CloudBlobContainer container)
+        {
+            if(SASs == null)
+            {
+                SASs = new Dictionary<CloudBlobContainer, (SharedAccessBlobPolicy, string)>();
+            }
+            
+            // If we never had a SAS, or the SAS we have is about to expire
+            if (!SASs.ContainsKey(container) || SASs[container].Item1.SharedAccessExpiryTime < DateTime.UtcNow.AddMinutes(20))
+            {
+                SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy()
+                {
+                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(2),
+                    Permissions = SharedAccessBlobPermissions.Read
+                };
+                string token = container.GetSharedAccessSignature(policy, null);
+
+                SASs[container] = (policy, token);
+            }
+
+            return SASs[container].Item2;
+        }
+        #endregion
 
     }
 }

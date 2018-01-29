@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TexasTRInventory.Data;
 using TexasTRInventory.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Ajax.Utilities;
 using TexasTRInventory.Services;
 using Microsoft.Extensions.Logging;
-using TexasTRInventory.Models.AccountViewModels;
+using TexasTRInventory.Constants;
 
 namespace TexasTRInventory.Controllers
 {
@@ -23,13 +19,20 @@ namespace TexasTRInventory.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        //12.7.17 adding more fields to do fancy authorization handling
+        private readonly IAuthorizationService _authorizationService;
 
-        public ApplicationUsersController(InventoryContext context, UserManager<ApplicationUser> userManager, ILoggerFactory loggerFactory, IEmailSender emailSender)
+        public ApplicationUsersController(InventoryContext context, 
+            UserManager<ApplicationUser> userManager,
+            ILoggerFactory loggerFactory,
+            IEmailSender emailSender,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
             _logger = loggerFactory.CreateLogger<ApplicationUsersController>();
             _emailSender = emailSender;
+            _authorizationService = authorizationService;
         }
 
         // GET: ApplicationUsers
@@ -51,8 +54,15 @@ namespace TexasTRInventory.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployerID"] = Utils.CompanyList(_context, applicationUser.Employer, false); //TODO I think I know why the employer isn't loading
-            return View(applicationUser);
+
+            //EXP 12.7.17. Make sure user has the right to edit this user
+            bool isAuthorized = await _authorizationService.AuthorizeAsync(User, applicationUser, PolicyNames.OnlyAdminsEditAdmins);
+            if (!isAuthorized)
+            {
+                return new ChallengeResult();
+            }
+
+            return EditViewWithEmployerList(applicationUser);
         }
 
         // POST: ApplicationUsers/Edit/5
@@ -60,21 +70,30 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("IsDisabled,EmployerID")] ApplicationUser user)
-        {
+        public async Task<IActionResult> Edit(string id, /*[Bind("IsDisabled,EmployerID")]*/ ApplicationUser applicationUser)
+        {            
             if (ModelState.IsValid)
             {
                 try
                 {
 
                     ApplicationUser dbUser = await _userManager.FindByIdAsync(id);
-                    dbUser.EmployerID = user.EmployerID;
-                    dbUser.IsDisabled = user.IsDisabled;
+
+                    //EXP 12.7.17. Make sure user has the right to edit this user
+                    bool isAuthorized = await _authorizationService.AuthorizeAsync(User, dbUser,PolicyNames.OnlyAdminsEditAdmins);
+                    if (!isAuthorized)
+                    {
+                        return new ChallengeResult();
+                    }
+
+                    dbUser.EmployerID = applicationUser.EmployerID;
+                    dbUser.IsDisabled = applicationUser.IsDisabled;
+                    dbUser.IsAdmin = applicationUser.IsAdmin && Utils.IsAdmin(User); //Sneaky how I made this an and, instead of an if. less readable, but so clever
                     await _userManager.UpdateAsync(dbUser);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ApplicationUserExists(user.Id))
+                    if (!ApplicationUserExists(applicationUser.Id))
                     {
                         return NotFound();
                     }
@@ -85,7 +104,13 @@ namespace TexasTRInventory.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            return View(user);
+            return EditViewWithEmployerList(applicationUser);
+        }
+
+        private IActionResult EditViewWithEmployerList(ApplicationUser applicationUser)
+        {
+            ViewData["EmployerID"] = Utils.CompanyList(_context, applicationUser.Employer, false); //TODO I think I know why the employer isn't loading
+            return View(applicationUser);
         }
 
         // GET: ApplicationUsers/Delete/5
@@ -100,10 +125,18 @@ namespace TexasTRInventory.Controllers
                 .AsNoTracking()
                 .Include(u => u.Employer)
                 .SingleOrDefaultAsync(m => m.Id == id);
+
             if (applicationUser == null)
             {
                 return NotFound();
             }
+
+            bool isAuthorized = await _authorizationService.AuthorizeAsync(User, applicationUser, PolicyNames.OnlyAdminsEditAdmins);
+            if (!isAuthorized)
+            {
+                return new ChallengeResult();
+            }
+
 
             return View(applicationUser);
         }
@@ -114,6 +147,14 @@ namespace TexasTRInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
+
+            //EXP 12.7.17. Make sure user has the right to edit this user
+            bool isAuthorized = await _authorizationService.AuthorizeAsync(User, applicationUser, PolicyNames.OnlyAdminsEditAdmins);
+            if (!isAuthorized)
+            {
+                return new ChallengeResult();
+            }
+
             _context.ApplicationUser.Remove(applicationUser);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

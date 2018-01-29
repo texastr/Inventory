@@ -18,10 +18,16 @@
     <None Remove="Properties\PublishProfiles\TexasTRInventory - Web Deploy.pubxml" />
   </ItemGroup>
 
+  <!--EXP 1.29.18. I don't know why/when/how this was put in to begin with, but it's causing errors so I'll take it out.
+  <ItemGroup>
+    <Compile Include="Models\Product.cs" />
+  </ItemGroup>-->
+
   <ItemGroup>
     <Content Include="node_modules\%40types\jquery\package.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.5.357" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.Samples" Version="2.1.0-alpha1" />
@@ -45,6 +51,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
     <PackageReference Include="sendgrid" Version="9.9.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" />

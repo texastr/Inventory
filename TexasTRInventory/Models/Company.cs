@@ -14,6 +14,6 @@ namespace TexasTRInventory.Models
         
         public bool IsInternal { get; set; }
        
-        public ICollection<Product> Products { get; set; }
+        public ICollection<ProductDBModel> Products { get; set; }
     }
 }

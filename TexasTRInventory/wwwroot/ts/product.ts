@@ -79,7 +79,7 @@ function displayImageFromURL(URL,divName){
         function (value, element, params) {
             let elems: HTMLCollectionOf<Element> = document.getElementsByClassName("sufficientimages");
             let cnt: number = elems.length;
-            let minFiles: number = params.cnt;
+            let minFiles: number = +params[0]; //I thought i could use params.cnt. But if params[0] works, I won't complain
             let filesCnt: number = 0;
             for (let i: number = 0; i < cnt; i++) {
                 let elem: HTMLInputElement = <HTMLInputElement >elems.item(i);

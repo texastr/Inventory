@@ -5,64 +5,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.IO;
+using System.Linq;
+using AutoMapper;
 
 namespace TexasTRInventory.Models
 {
-    public class ProductViewModel
+    public class ProductViewModel : Product
     {
-        public int ID { get; set; }
-        public int? SupplierID { get; set; }
-        public Company Supplier { get; set; }
-
-		[DisplayName("Brand Name - 产品品牌")]
-		public string Brand { get; set; }
-
-		[DisplayName("Stock Keeping Unit (SKU) - 库存单位(SKU)")]
-		public string SKU { get; set; }
-
-		[DisplayName("Item Name - 产品名称")]
-        public string Name { get; set; }
-
-        [DisplayName("Product Description - 产品描述")]
-        public string Info { get; set; }
-
-		[DisplayName("Package Contents - 包装内容(盒子里内容)")]
-		public string PackageContents { get; set; }
-
-		[DisplayName("Cost - 批发价")]
-        public decimal? OurCost { get; set; }
-   
-        [DisplayName("MAP - Lowest Advertised Price - 最低零售价(不能低于它)")]
-        public decimal? MAP { get; set; }
-        
-		[DisplayName("Dimensions - 尺寸")]
-        public string Dimensions { get; set; }
-
-		[DisplayName("Weight - 重量")]
-		public string Weight { get; set; }
-
-		[DisplayName("Universal Product Code (UPC) - 通用产品代码 (条形码)")]
-		public string UPC { get; set; }
-
-		[DisplayName("Website URL For Item - 产品网站 / 网址")]
-		public string Website { get; set; }
-
-
-		//Internal-only fields
-
-		[DisplayName("Tags")]
-		public string Category { get; set; }
-
-		[DisplayName("Quantity on hand")]
-		public int? Inventory { get; set; }
-
-		[DisplayName("Part Number")]
-		public string PartNumber { get; set; }
-
-		[DisplayName("Amazon ASIN")]
-		public string AmazonASIN { get; set; }
-
-		public string Dealer { get; set; }
 
 		/*the retailer specific information I'll do later
         B&H,Adorama,Sammys,eBay,New Egg, Walmart, Walmart DSV,Jet.com,Vendor - Drop ship, Vendor USA,Vendor Canada
@@ -72,14 +24,116 @@ namespace TexasTRInventory.Models
 		public IFormFileCollection ImageFiles { get; set;} //Maybe rename?
 
 		[DisplayName("Previously Uploaded Photos -- WTF is that in Chinese?")]
-		public ICollection<FilePath> OldFilePaths { get; set; }
+		public IList<string> OldFileURLs { get; set; }
+
+        public ProductViewModel()
+        {
+            //We already learned the hard way that you need a parameterless constructor
+        }
+
+        public static async Task<ProductViewModel> FromDBProduct (ProductDBModel product)
+        {
+
+            ProductViewModel ret = Mapper.Map<ProductDBModel, ProductViewModel>(product);
+            //This is not done. This may even crash.
+            //Now to convert the IFP objects to strings.
+            ret.OldFileURLs = await GetImageURLs(product);
+
+            return ret;
+        }
+
+        public static async Task<IList<string>> GetImageURLs(ProductDBModel product)
+        {
+            int size = product.ImageFilePaths.Count;
+            IList<string> ret = new List<string>(size);
+            for (int i = 0; i < size; i++)
+            {
+                string fileName = product.ImageFilePaths?.ElementAt(i)?.FileName;
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    try
+                    {
+                        ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
+                    }
+                    catch
+                    {
+                        //If we can't get the image, just return null. NBD
+                        ret[i] = "";
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public async Task<ProductDBModel> ToProductDB()
+        {
+            ProductDBModel ret = Mapper.Map<ProductViewModel, ProductDBModel>(this);//new ProductDBModel();
+                        
+            //now to map the IFormFiles to ImageFilePaths
+            ret.ImageFilePaths = new List<FilePath>();                                                                                                     
+
+            foreach (IFormFile file in this.ImageFiles)
+            {
+                FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
+                ret.ImageFilePaths.Add(uploadedImage);
+            }
+
+            return ret;
+        }
+
+        #region uploaderHelpers
+        private async Task<string> UploadImageWrapper(IFormFile upload)
+        {
+            if (upload != null)
+            {
+                if (upload.ContentType.StartsWith("image/")) //TODO have an attribute on the model check that it's an image
+                {
+                    try
+                    {
+                        string newFileName = await UploadFile(upload);
+                        return newFileName;
+                    }
+                    catch(Exception e)
+                    {
+                        throw new FileUploadFailedException("Uploading the product's image files failed.", e);
+                    }
+                }
+                else
+                {
+                    throw new FileUploadFailedException("You attempted to upload a file that is not an image file.");
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<string> UploadFile(IFormFile upload)
+        {
+            string newFileName = UniqueFileName(upload.FileName);
+            CloudBlockBlob blob = await GlobalCache.GetImageBlob(newFileName);
+            blob.Properties.ContentType = upload.ContentType;
+
+            using (Stream intermediateMemory = new MemoryStream())
+            {
+                upload.CopyTo(intermediateMemory);
+                intermediateMemory.Seek(0, SeekOrigin.Begin);
+                blob.UploadFromStream(intermediateMemory);
+            }
+
+            return newFileName;
+        }
+
+        private string UniqueFileName(string fileName)
+        {
+            return String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), fileName);
+        }
+        #endregion
 
 
-		
     }
-	public class SufficientImagesAttribute : ValidationAttribute, IClientModelValidator
+    public class SufficientImagesAttribute : ValidationAttribute, IClientModelValidator
 	{
-		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+		protected override ValidationResult IsValid(object value, System.ComponentModel.DataAnnotations.ValidationContext validationContext)
 		{
 			IFormFileCollection input = (IFormFileCollection)value;
 
@@ -117,4 +171,20 @@ namespace TexasTRInventory.Models
 		}
 	}
 
+    public class FileUploadFailedException : Exception
+    {
+        public FileUploadFailedException()
+        {
+        }
+
+        public FileUploadFailedException(string message)
+            : base(message)
+        {
+        }
+
+        public FileUploadFailedException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+    }
 }

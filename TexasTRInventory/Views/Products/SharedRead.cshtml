@@ -1,8 +1,5 @@
-﻿@model TexasTRInventory.Models.Product
+﻿@model TexasTRInventory.Models.ProductViewModel
 @using Microsoft.AspNetCore.Html;
-@{
-    string[] imageURLs = await Utils.GetImageURLs(Model);
-}
 
 <script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script>
 <script src="~/js/product.js"></script>
@@ -82,7 +79,7 @@
         <dd></dd>
          @{
              int counter = 0;
-             foreach (string URL in imageURLs)
+             foreach (string URL in Model.OldFileURLs)
              {
                  if (URL != "")
                  {

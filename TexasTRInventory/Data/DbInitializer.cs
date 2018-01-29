@@ -4,8 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNet.Identity.Owin;
 
 namespace TexasTRInventory.Data
 {
@@ -16,7 +14,7 @@ namespace TexasTRInventory.Data
             context.Database.EnsureCreated();
             if (!context.Companies.Where(c => c.IsInternal).Any())
             {
-                context.Companies.Add(new Company {Name = Constants.TexasTRCompanyName, IsInternal=true });
+                context.Companies.Add(new Company {Name = Constants.GenConfig.TexasTRCompanyName, IsInternal=true });
                 context.SaveChanges();
             }
         
@@ -34,7 +32,8 @@ namespace TexasTRInventory.Data
                             UserName = adminIdentifier,
                             Email = adminIdentifier,
                             EmailConfirmed = true,
-                            EmployerID = GlobalCache.GetTexasTRCompanyID(context)
+                            EmployerID = GlobalCache.GetTexasTRCompanyID(context),
+                            IsAdmin = true
                         };
 
                         string pwd = await GlobalCache.GetSecret(Constants.SecretNames.AdminInitializer);
@@ -63,14 +62,14 @@ namespace TexasTRInventory.Data
             }
             context.SaveChanges();
 
-            var products = new Product[]
+            var products = new ProductDBModel[]
             {
-                    new Product{Name="the first product", SupplierID=1, Info="this product, from producer 1, rocks the fucking house"},
-                    new Product{Name="the first product", SupplierID=2, Info="this product, from producer 2, rocks the fucking house"},
-                    new Product{Name="the first product", SupplierID=3, Info="this product, from producer 3, rocks the fucking house"},
-                    new Product{Name="the first product", SupplierID=4, Info="this product, from producer 4, rocks the fucking house"},
+                    new ProductDBModel{Name="the first product", SupplierID=1, Info="this product, from producer 1, rocks the fucking house"},
+                    new ProductDBModel{Name="the first product", SupplierID=2, Info="this product, from producer 2, rocks the fucking house"},
+                    new ProductDBModel{Name="the first product", SupplierID=3, Info="this product, from producer 3, rocks the fucking house"},
+                    new ProductDBModel{Name="the first product", SupplierID=4, Info="this product, from producer 4, rocks the fucking house"},
             };
-            foreach (Product c in products)
+            foreach (ProductDBModel c in products)
             {
                 context.Products.Add(c);
             }

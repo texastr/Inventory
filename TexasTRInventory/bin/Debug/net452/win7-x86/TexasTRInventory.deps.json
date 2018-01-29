@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETFramework,Version=v4.5.2/win7-x86",
-    "signature": "bdf867859f6173acac3038e63702771549513e93"
+    "signature": "e3de2441923cd05fc500084b1219b4bcbda250ad"
   },
   "compilationOptions": {
     "defines": [
@@ -23,6 +23,7 @@
     ".NETFramework,Version=v4.5.2": {
       "texastrinventory/1.0.0": {
         "dependencies": {
+          "AutoMapper": "6.2.2",
           "BuildBundlerMinifier": "2.5.357",
           "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",
           "Microsoft.AspNet.Identity.Samples": "2.1.0-alpha1",
@@ -42,6 +43,7 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.16.204221202",
           "Microsoft.VisualStudio.Web.BrowserLink": "1.1.2",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "1.1.1",
+          "System.ValueTuple": "4.4.0",
           "WindowsAzure.Storage": "8.4.0",
           "Sendgrid": "9.9.0"
         },
@@ -412,6 +414,11 @@
       "antlr/3.4.1.9004": {
         "compile": {
           "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "automapper/6.2.2": {
+        "compile": {
+          "lib/net45/AutoMapper.dll": {}
         }
       },
       "bootstrap/3.0.0": {
@@ -2001,6 +2008,11 @@
         }
       },
       "system.threading.timer/4.3.0": {},
+      "system.valuetuple/4.4.0": {
+        "compile": {
+          "ref/portable-net40+sl4+win8+wp8/System.ValueTuple.dll": {}
+        }
+      },
       "system.xml.readerwriter/4.3.0": {},
       "system.xml.xdocument/4.3.0": {},
       "webgrease/1.5.2": {
@@ -2027,6 +2039,7 @@
     ".NETFramework,Version=v4.5.2/win7-x86": {
       "texastrinventory/1.0.0": {
         "dependencies": {
+          "AutoMapper": "6.2.2",
           "BuildBundlerMinifier": "2.5.357",
           "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",
           "Microsoft.AspNet.Identity.Samples": "2.1.0-alpha1",
@@ -2046,6 +2059,7 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "2.16.204221202",
           "Microsoft.VisualStudio.Web.BrowserLink": "1.1.2",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "1.1.1",
+          "System.ValueTuple": "4.4.0",
           "WindowsAzure.Storage": "8.4.0",
           "Sendgrid": "9.9.0"
         },
@@ -2056,6 +2070,11 @@
       "antlr/3.4.1.9004": {
         "runtime": {
           "lib/Antlr3.Runtime.dll": {}
+        }
+      },
+      "automapper/6.2.2": {
+        "runtime": {
+          "lib/net45/AutoMapper.dll": {}
         }
       },
       "bootstrap/3.0.0": {
@@ -3764,6 +3783,11 @@
         }
       },
       "system.threading.timer/4.3.0": {},
+      "system.valuetuple/4.4.0": {
+        "runtime": {
+          "lib/netstandard1.0/System.ValueTuple.dll": {}
+        }
+      },
       "system.xml.readerwriter/4.3.0": {},
       "system.xml.xdocument/4.3.0": {},
       "webgrease/1.5.2": {
@@ -3800,6 +3824,13 @@
       "sha512": "sha512-c1S+HBE+KYA5EBxtn25LEK02hHPH/tDQ6RviUTTCJpZIPoputtn8ArsQJy9lVJWZOnw37ufByO2Fmf1M8wpr8Q==",
       "path": "antlr/3.4.1.9004",
       "hashPath": "antlr.3.4.1.9004.nupkg.sha512"
+    },
+    "automapper/6.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eGKcnJdoF5rYMWPUaSPtlWdvua9xw4hnQN5kM/X4AXLGKghrtPIaMv+RYoA3sj0kyZ3X6wZ1Qj67F+u0pCCPaw==",
+      "path": "automapper/6.2.2",
+      "hashPath": "automapper.6.2.2.nupkg.sha512"
     },
     "bootstrap/3.0.0": {
       "type": "package",
@@ -5193,6 +5224,13 @@
       "sha512": "sha512-Z6YfyYTCg7lOZjJzBjONJTFKGN9/NIYKSxhU5GRd+DTwHSZyvWp1xuI5aR+dLg+ayyC5Xv57KiY4oJ0tMO89fQ==",
       "path": "system.threading.timer/4.3.0",
       "hashPath": "system.threading.timer.4.3.0.nupkg.sha512"
+    },
+    "system.valuetuple/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-BahUww/+mdP4ARCAh2RQhQTg13wYLVrBb9SYVgW8ZlrwjraGCXHGjo0oIiUfZ34LUZkMMR+RAzR7dEY4S1HeQQ==",
+      "path": "system.valuetuple/4.4.0",
+      "hashPath": "system.valuetuple.4.4.0.nupkg.sha512"
     },
     "system.xml.readerwriter/4.3.0": {
       "type": "package",

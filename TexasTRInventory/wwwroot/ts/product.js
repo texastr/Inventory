@@ -58,7 +58,7 @@ jQuery(document).ready(function ($) {
     jQuery.validator.addMethod('sufficientimages', function (value, element, params) {
         var elems = document.getElementsByClassName("sufficientimages");
         var cnt = elems.length;
-        var minFiles = params.cnt;
+        var minFiles = +params[0]; //I thought i could use params.cnt. But if params[0] works, I won't complain
         var filesCnt = 0;
         for (var i = 0; i < cnt; i++) {
             var elem = elems.item(i);

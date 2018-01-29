@@ -17,10 +17,6 @@ namespace TexasTRInventory.Controllers
 
         public IActionResult Index()
         {
-			//Good stop to put trash that I want to trip the debugger
-			ProductViewModel pvm = new ProductViewModel() { Brand = "brand string", SKU = "sku string" };
-			Product product = new Product(pvm);
-
 			return View();
         }
 

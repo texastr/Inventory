@@ -12,6 +12,6 @@ namespace TexasTRInventory.Models
         [StringLength(255)]
         public string FileName { get; set; }
         public int ProductID { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual ProductDBModel Product { get; set; }
     }
 }

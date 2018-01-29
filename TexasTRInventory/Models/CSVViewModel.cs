@@ -2,37 +2,41 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace TexasTRInventory.Models
 {
-	//I hate this class and I hope I don't have to use it.
-	public class CSVList
-	{
-		public List<CSVViewModel> TheOnlyField { get; set; }
-	}
 
 	public class CSVViewModel
     {
 		[DisplayName("Delete?")]
-		public string ShouldBeDeleted { get; set; }
+		public bool ShouldBeDeleted { get; set; }
 
 		public string Name { get; set; }
 
 		[DisplayName("Download")]
+        [DataType(DataType.Url)]
 		public string URL { get; set; }
 
 		[DisplayName("Last Modified")]
-		public DateTimeOffset? Modified { get; set; }
+        [DisplayFormat(DataFormatString = "O"/*"{0:MMM dd, yyyy hh:mm:ss zzz}"*/)]
+        public DateTimeOffset? Modified { get; set; }
 
 		[DisplayName("File Size")]
 		public string PrettySize { get; set; }
 
-		public CSVViewModel(CloudBlockBlob blob)
+        public CSVViewModel()
+        {
+            //https://www.red-gate.com/simple-talk/dotnet/asp-net/model-binding-asp-net-core/
+            //Maybe throwing in a parameterless constructor will help
+        }
+
+        public CSVViewModel(CloudBlockBlob blob)
 		{
 			Name = blob.Name;
-			URL = blob.Uri.AbsoluteUri;
+            URL = blob.Uri.AbsoluteUri;
 			Modified = blob.Properties.LastModified;
 			PrettySize = BytesToString(blob.Properties.Length);
 		}

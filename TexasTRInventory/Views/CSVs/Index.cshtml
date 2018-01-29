@@ -1,0 +1,66 @@
+@using  TexasTRInventory.Models
+@model List<CSVViewModel>
+
+@{
+    ViewData["Title"] = "Saved Off Versions";
+    string SASToken = await GlobalCache.GetCsvSas();
+}
+
+<h2>@ViewData["Title"]</h2>
+<script src="~/ts/CSV.js"></script>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <table class="table">
+        <thead>
+
+            <tr>
+                @*I don't know why this doesn't crasy when Model is empty. But it doesn't. So that's great.*@
+                <th>
+                    @Html.LabelFor(p=>Model.FirstOrDefault().ShouldBeDeleted)
+                </th>
+                <th>
+                    @Html.LabelFor(p => Model.FirstOrDefault().Modified)
+                </th>
+                <th>
+                    @Html.LabelFor(p => Model.FirstOrDefault().PrettySize)
+                </th>
+                <th>
+                    @Html.LabelFor(p => Model.FirstOrDefault().URL)
+                </th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="text" hidden="hidden" name=CSVlist[@i].Name value=@Model[i].Name />
+                        <input type="text" hidden="hidden" name=CSVlist[@i].Modified value=@Model[i].Modified />
+                        <input type="text" hidden="hidden" name=CSVlist[@i].PrettySize value=@Model[i].PrettySize />
+                        <input type="text" hidden="hidden" name=CSVlist[@i].URL value=@Model[i].URL />
+                        <input type="checkbox" name="CSVlist[@i].ShouldBeDeleted" value="true" onclick="CheckboxClicked();" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => m[i].Modified.Value.LocalDateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => m[i].PrettySize)
+                    </td>
+                    <td>
+                        <a href=@(Model[i].URL + SASToken)>@Model[i].Name</a>
+                    </td>
+                </tr>
+
+
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input onclick="return IsDeleteConfirmed();" type="submit" value="Delete Selected" class="btn btn-default" disabled="disabled" id="btnSubmit"/>
+    </div>
+}

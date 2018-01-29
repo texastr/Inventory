@@ -1,3 +1,4 @@
+@using  TexasTRInventory.ExternalUtils;
 @model IEnumerable<TexasTRInventory.Models.ApplicationUser>
 <!DOCTYPE html>
 
@@ -19,17 +20,20 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EmailConfirmed)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsDisabled)
-                </th>
-                <th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailConfirmed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsDisabled)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Employer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAdmin)
             </th>
         </tr>
     </thead>
@@ -49,9 +53,15 @@
                 @Html.DisplayFor(modelItem => item.Employer.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.IsAdmin)
             </td>
+            @if (ApplicationUserUtils.CanUserEditUser(User, item))
+            {
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            }
         </tr>
 }
     </tbody>

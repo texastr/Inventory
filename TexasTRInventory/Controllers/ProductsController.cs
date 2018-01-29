@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using TexasTRInventory.Constants;
 
 namespace TexasTRInventory.Controllers
 {
@@ -32,7 +35,7 @@ namespace TexasTRInventory.Controllers
         public async Task<IActionResult> Index(string sortOrder)
         {
 
-			IQueryable<Product> products;
+			IQueryable<ProductDBModel> products;
             if (Utils.IsInternalUser(User))
             {
                 products = _context.Products.Include(p => p.Supplier);
@@ -102,23 +105,21 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create (ProductViewModel product)//Create(IFormFileCollection upload,[Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Create (ProductViewModel pvm)
         {
-			//EXP 9.26.17 Side effect: will mark the model stat as invalid if the file is bad
-			//EXP 10.31.17 TODO: do all uploads in one shot, as a transaction
-			//Intialize the ImageFilePath collection
-			//product.ImageFilePaths = new Collection<FilePath>();
-
 			if(!ModelState.IsValid)return ViewWithSupplierList(); ;
 
-			foreach (IFormFile file in product.ImageFiles/*upload*/){
-				if (!ModelState.IsValid)
-				{
-					break;
-				}
-				FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
-				//product.ImageFilePaths.Add(uploadedImage);
-			}
+            ProductDBModel product = null;
+            try
+            {
+                product = await pvm.ToProductDB();
+            }
+            catch (FileUploadFailedException e)
+            {
+                Expression<Func<ProductViewModel, IFormFileCollection>> expression = p => p.ImageFiles;
+                string key = ExpressionHelper.GetExpressionText(expression);
+                ModelState.AddModelError(key, e.Message);
+            }
 
             if (ModelState.IsValid)
             {
@@ -130,52 +131,7 @@ namespace TexasTRInventory.Controllers
             return ViewWithSupplierList();
         }
 
-        private async Task<string> UploadImageWrapper(IFormFile upload)
-        {
-            if (upload != null)
-            {
-                if (upload.ContentType.StartsWith("image/")) //TODO have an attribute on the model check that it's an image
-                {
-                    try
-                    {
-                        string newFileName = await UploadFile(upload);
-                        return newFileName;
-                    }
-                    catch
-                    {
-                        ModelState.AddModelError(string.Empty, "Uploading the product's image file failed.");
-                        //TODO. This is a good spot to log an error
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "The file you attempted to upload is not an image file.");
-                }
-            }
 
-            return null;
-        }
-
-        private async Task<string> UploadFile(IFormFile upload)
-        {
-            string newFileName = UniqueFileName(upload.FileName);
-            CloudBlockBlob blob = await GlobalCache.GetImageBlob(newFileName);
-            blob.Properties.ContentType = upload.ContentType;
-
-            using (Stream intermediateMemory = new MemoryStream())
-            {
-                upload.CopyTo(intermediateMemory);
-                intermediateMemory.Seek(0, SeekOrigin.Begin);
-                blob.UploadFromStream(intermediateMemory);
-            }
-
-            return newFileName;
-        }
-
-        private string UniqueFileName(string fileName)
-        {
-            return String.Join("$", DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-fff"), fileName);
-        }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -208,9 +164,9 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] Product product)
+        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] ProductDBModel product)
         {
-            Product existingProduct = await _context.Products
+            ProductDBModel existingProduct = await _context.Products
                 .Include(p => p.Supplier)
                 .Include(p => p.ImageFilePaths)
                 .SingleOrDefaultAsync(m => m.ID == id);
@@ -233,7 +189,7 @@ namespace TexasTRInventory.Controllers
 			}
 
 
-            string newFileName = await UploadImageWrapper(upload);
+            string newFileName = null; //TODO EXP breaking everything! await ProductViewModel.UploadImageWrapper(upload);
 
             if (ModelState.IsValid)
             {
@@ -266,7 +222,7 @@ namespace TexasTRInventory.Controllers
             return View(product);
         }
 
-        private async Task<FilePath> GetEmptyFilePath(Product product)
+        private async Task<FilePath> GetEmptyFilePath(ProductDBModel product)
         {
 			FilePath oldFilePath = null;//just want to to get this to compile product.ImageFilePath;
             
@@ -346,24 +302,24 @@ namespace TexasTRInventory.Controllers
             return _context.Products.Any(e => e.ID == id);
         }
 
-        private IActionResult ViewWithSupplierList(Product currentProduct = null)
+        private IActionResult ViewWithSupplierList(ProductDBModel currentProduct = null)
         {
-            ViewData[Constants.KeyNames.SupplierID] = Utils.CompanyList(_context, currentProduct?.Supplier);
+            ViewData[KeyNames.SupplierID] = Utils.CompanyList(_context, currentProduct?.Supplier);
             return View();
         }
 
         private IActionResult HiddenProductError()
         {
-            ViewData[Constants.KeyNames.ErrorDetails] = "You do not have the right to access that product.";
+            ViewData[KeyNames.ErrorDetails] = "You do not have the right to access that product.";
             return View("Error");
         }
     }
 
     static class ProductExtensions
     {
-        public static bool IsOwnProduct(this ClaimsPrincipal user, Product product)
+        public static bool IsOwnProduct(this ClaimsPrincipal user, ProductDBModel product)
         {
-            return Utils.IsInternalUser(user) || user.FindFirst(Constants.ClaimTypes.EmployerID).Value == product.SupplierID.ToString();
+            return Utils.IsInternalUser(user) || user.FindFirst(ClaimNames.EmployerID).Value == product.SupplierID.ToString();
         }
 
     }
