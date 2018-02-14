@@ -1,4 +1,4 @@
-@model IEnumerable<TexasTRInventory.Models.Product>
+@model TexasTRInventory.PaginatedList<TexasTRInventory.Models.Product>
 
 @{
     ViewData["Title"] = "Products";
@@ -18,43 +18,43 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Brand)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Brand)
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["SKUSortParm"]">@Html.DisplayNameFor(model => model.SKU)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["SKUSortParm"]">@Html.DisplayNameFor(model => model.FirstOrDefault().SKU)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Name)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.FirstOrDefault().Name)</a>
             </th>
             <th style=" max-width: 200000px;">
 
-                @Html.DisplayNameFor(model => model.Info)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Info)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OurCost)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().OurCost)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MAP)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().MAP)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Dimensions)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Dimensions)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Weight)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Weight)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UPC)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().UPC)
             </th>
             @if (Utils.IsInternalUser(User))
             {
                 <th>
-                    @Html.DisplayNameFor(model => model.Supplier)
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Supplier)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.PartNumber)
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().PartNumber)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Dealer)
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Dealer)
                 </th>
             }
         </tr>
@@ -112,3 +112,33 @@
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-page="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-page="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
+Products per page:
+
+@{
+    string[] pageSizes = { "10", "20", "50", "100", "all" };
+    foreach (string size in pageSizes)
+    {
+        <a asp-action="Index" asp-route-pageSize=@size>@size</a>
+    }
+}

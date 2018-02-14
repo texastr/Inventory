@@ -32,7 +32,7 @@ namespace TexasTRInventory.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, int? page, string pageSize)
         {
 
 			IQueryable<ProductDBModel> products;
@@ -47,6 +47,7 @@ namespace TexasTRInventory.Controllers
             }
 
             //EXP 9.28.17. Interpreting the sortOrderParam
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["SKUSortParm"] = String.IsNullOrEmpty(sortOrder) ? "SKU_desc" : "";
             ViewData["NameSortParm"] = sortOrder == "name" ? "name_desc" : "name";
 
@@ -66,7 +67,12 @@ namespace TexasTRInventory.Controllers
                     break;
             }
 
-            return View(await products.AsNoTracking().ToListAsync());
+            int pageSizeInt;
+            if (!int.TryParse(pageSize, out pageSizeInt))
+            {
+                pageSizeInt = int.MaxValue;
+            }
+            return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),page ?? 1, pageSizeInt));
         }
 
         // GET: Products/Details/5
@@ -91,7 +97,8 @@ namespace TexasTRInventory.Controllers
                 return HiddenProductError();
             }
 
-            return View(product);
+            ProductViewModel pvm = await ProductViewModel.FromDBProduct(product);
+            return View(pvm);
         }
 
         // GET: Products/Create
@@ -156,7 +163,8 @@ namespace TexasTRInventory.Controllers
             }
 
             ViewData["SupplierID"] = Utils.CompanyList(_context, product.Supplier);
-            return View(product);
+            var pvm = await ProductViewModel.FromDBProduct(product);
+            return View(pvm);
         }
 
         // POST: Products/Edit/5
@@ -164,7 +172,7 @@ namespace TexasTRInventory.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile upload, [Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] ProductDBModel product)
+        public async Task<IActionResult> Edit(int id, ProductViewModel product)
         {
             ProductDBModel existingProduct = await _context.Products
                 .Include(p => p.Supplier)
@@ -265,7 +273,8 @@ namespace TexasTRInventory.Controllers
                 return HiddenProductError();
             }
 
-            return View(product);
+            ProductViewModel pvm = await ProductViewModel.FromDBProduct(product);
+            return View(pvm);
         }
 
         // POST: Products/Delete/5

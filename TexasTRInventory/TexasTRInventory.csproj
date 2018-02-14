@@ -47,6 +47,7 @@
     <!--<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="1.1.2" />-->
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="2.16.204221202" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
     <PackageReference Include="sendgrid" Version="9.9.0" />

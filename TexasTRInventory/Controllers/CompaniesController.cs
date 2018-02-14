@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TexasTRInventory.Data;
 using TexasTRInventory.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;//EXP 9.13.17. From here to the end, all bullshit
-using Microsoft.AspNetCore.Identity;
 
 namespace TexasTRInventory.Controllers
 {
@@ -25,7 +23,6 @@ namespace TexasTRInventory.Controllers
         // GET: Companies
         public async Task<IActionResult> Index()
         {
-           
             //This is the only line that is not shit.
             return View(await _context.Companies.ToListAsync());
         }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,6 +30,7 @@ namespace TexasTRInventory.Models
         public string Name { get; set; }
 
         [DisplayName("Product Description - 产品描述")]
+        [DataType(DataType.MultilineText)]
         public string Info { get; set; }
 
         [DisplayName("Package Contents - 包装内容(盒子里内容)")]
@@ -69,6 +71,9 @@ namespace TexasTRInventory.Models
 
         public string Dealer { get; set; }
 
+        [DisplayName("Has an Admin Approved?")]
+        public bool IsAdminApproved { get; set; }
+
         public static void MapperInitializer()
         {
             Mapper.Initialize(cfg =>
@@ -77,6 +82,6 @@ namespace TexasTRInventory.Models
                     cfg.CreateMap<ProductDBModel, ProductViewModel>();
                 });
         }
-
+        
     }
 }

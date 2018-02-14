@@ -91,7 +91,7 @@ namespace TexasTRInventory.Controllers
 		{
 			foreach (PropertyInfo pi in product.GetType().GetProperties())
 			{
-				var val = pi.GetValue(product);
+				var val = pi.GetValue(product) ?? string.Empty;
                 AppendCell(sb, val.ToString());
 			}
 

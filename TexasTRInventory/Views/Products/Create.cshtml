@@ -43,7 +43,9 @@
         <div class="form-group">
             <label asp-for="Info" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Info" class="form-control" />
+                @*<input asp-for="Info" class="form-control" />*@
+                @Html.TextArea("Info",null/*TODO make sure that existing text is included*/, 5,200
+               ,null)
                 <span asp-validation-for="Info" class="text-danger"></span>
             </div>
         </div>

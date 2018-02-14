@@ -53,12 +53,14 @@ namespace TexasTRInventory.Models
                 {
                     try
                     {
-                        ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
+                        //ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
+                        string URL = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
+                        ret.Add(URL);
                     }
                     catch
                     {
                         //If we can't get the image, just return null. NBD
-                        ret[i] = "";
+                        ret.Add("");
                     }
                 }
             }
@@ -133,7 +135,11 @@ namespace TexasTRInventory.Models
     }
     public class SufficientImagesAttribute : ValidationAttribute, IClientModelValidator
 	{
-		protected override ValidationResult IsValid(object value, System.ComponentModel.DataAnnotations.ValidationContext validationContext)
+        public static string ErrMsg
+        {
+            get { return $"A minimum of {GlobalCache.MinImgFilesCnt()} images are required."; }
+        }
+        protected override ValidationResult IsValid(object value, System.ComponentModel.DataAnnotations.ValidationContext validationContext)
 		{
 			IFormFileCollection input = (IFormFileCollection)value;
 
@@ -143,7 +149,7 @@ namespace TexasTRInventory.Models
 			}
 			else
 			{
-				return new ValidationResult($"A minimum of {GlobalCache.MinImgFilesCnt()} images are required.");
+				return new ValidationResult(ErrMsg);
 			}
 		}
 
@@ -155,7 +161,7 @@ namespace TexasTRInventory.Models
 			}
 
 			MergeAttribute(context.Attributes, "data-val","true");//not sure what this line does.
-			MergeAttribute(context.Attributes, "data-val-sufficientimages", "this is the error message defined in the view model class");
+			MergeAttribute(context.Attributes, "data-val-sufficientimages", ErrMsg);
 			MergeAttribute(context.Attributes, "data-val-sufficientimages-cnt", GlobalCache.MinImgFilesCnt().ToString());
 		}
 

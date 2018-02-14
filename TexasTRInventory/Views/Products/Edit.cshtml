@@ -1,10 +1,10 @@
-@model TexasTRInventory.Models.Product
+@model TexasTRInventory.Models.ProductViewModel
 
-@{
-    ViewData["Title"] = "Edit";
+@*@{//EXP 2.14.18 I think this is no longer necessary, because we have the better model
+        ViewData["Title"] = "Edit";
 
-    string imageURL = await Utils.GetImageURL(Model);
-}
+        string imageURL = await TexasTRInventory.ExternalUtils.GetImageURL(Model);
+    }*@
 
 <h2>Edit</h2>
 
@@ -93,15 +93,20 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-md-2 control-label">Current Photo</label>
-            @if (imageURL != "")
-            {
-                <img class="col-md-10" style="max-height:500px;max-width:500px" src=@imageURL>}
-            else
-            {
-                <span class="col-md-10">No image found</span>
-
-            }
+            <label class="col-md-2 control-label">Current Photos</label>
+            <div class="col-md-10">
+                @if (Model.OldFileURLs != null && Model.OldFileURLs.Count > 0)
+                {
+                    foreach (string imageURL in Model.OldFileURLs)
+                    {
+                        <img class="col-md-10" style="max-height:500px;max-width:500px" src=@imageURL>
+                    }
+                }
+                else
+                {
+                    <span class="col-md-10">No images found</span>
+                }
+            </div>
         </div>
         <div class="form-group">
             @Html.Label("EXP This doesn't matter", "Replacement Image", new { @class = "control-label col-md-2" })
