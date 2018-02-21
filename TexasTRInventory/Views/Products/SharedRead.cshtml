@@ -1,5 +1,6 @@
 ﻿@model TexasTRInventory.Models.ProductViewModel
 @using Microsoft.AspNetCore.Html;
+@using TexasTRInventory.Models;
 
 <script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script>
 <script src="~/ts/product.js"></script>
@@ -79,16 +80,16 @@
         <dd></dd>
          @{
              int counter = 0;
-             foreach (string URL in Model.OldFileURLs)
+             foreach (OldImage oi in Model.OldFileURLs)
              {
-                 if (URL != "")
+                 if (oi.URL != "")
                  {
                      counter++;
                      IHtmlContent ddID = Html.QuotedString("dd" + counter.ToString());
                     <dt>Image number @counter</dt>
                     <dd id=@ddID>
                     </dd>
-                    <script>displayImageFromURL(@Html.QuotedString(URL),@ddID);</script>
+                    <script>displayImageFromURL(@Html.QuotedString(oi.URL),@ddID);</script>
                  }
              }
         }
@@ -132,5 +133,11 @@
                 @Html.DisplayFor(model => model.Category)
             </dd>
         }
+        <dt>
+            @Html.DisplayNameFor(model => model.IsAdminApproved)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsAdminApproved)
+        </dd>
     </dl>
 </div>

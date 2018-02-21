@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace TexasTRInventory.Models
@@ -58,20 +59,26 @@ namespace TexasTRInventory.Models
         //Internal-only fields
 
         [DisplayName("Tags")]
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public string Category { get; set; }
 
         [DisplayName("Quantity on hand")]
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public int? Inventory { get; set; }
 
         [DisplayName("Part Number")]
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public string PartNumber { get; set; }
 
         [DisplayName("Amazon ASIN")]
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public string AmazonASIN { get; set; }
 
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public string Dealer { get; set; }
 
         [DisplayName("Has an Admin Approved?")]
+        [RestrictedField(Constants.ClaimNames.IsAdmin)]
         public bool IsAdminApproved { get; set; }
 
         public static void MapperInitializer()
@@ -84,4 +91,21 @@ namespace TexasTRInventory.Models
         }
         
     }
+
+    [AttributeUsage(AttributeTargets.All, Inherited = false)]
+    public class RestrictedFieldAttribute: Attribute
+    {
+        public string RequiredClaim { get; set; }
+
+        public RestrictedFieldAttribute(string requiredClaim)
+        {
+            RequiredClaim = requiredClaim;
+        }
+
+        public bool CanUserEdit(ClaimsPrincipal user)
+        {
+            return user.HasClaim(RequiredClaim, true.ToString());
+        }
+    }
+
 }

@@ -20,6 +20,17 @@ namespace TexasTRInventory.Controllers
             return View();
         }
 
+        //
+        // GET: /Home/Index2
+        [HttpGet]
+        public IActionResult Index2()//string arg1 = null, string arg2 = null)
+        {
+            //MessageBox.Show($"the first arg was {arg1} and the second one was {arg2}.");
+            MessageBox.Show("hello from index2");
+            return View("Index");
+        }
+
+
         public IActionResult Error()
         {
             return View();

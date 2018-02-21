@@ -199,7 +199,7 @@ namespace TexasTRInventory.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            //Must also repopulate the list of suppliers. Maybe I should refactor it to a different tag
+            ViewData["EmployerID"] = Utils.CompanyList(_context, excludeInternal: false);
             return View(model);
         }
 

@@ -15,71 +15,90 @@ namespace TexasTRInventory.Models
 {
     public class ProductViewModel : Product
     {
-
-		/*the retailer specific information I'll do later
+        
+        /*the retailer specific information I'll do later
         B&H,Adorama,Sammys,eBay,New Egg, Walmart, Walmart DSV,Jet.com,Vendor - Drop ship, Vendor USA,Vendor Canada
         */
-		[DisplayName("Upload Your Product Photos - 上传产品图片")]
-		[SufficientImages]
+
+        [DisplayName("Upload Your Product Photos - 上传产品图片")]
+		//[SufficientImages]
 		public IFormFileCollection ImageFiles { get; set;} //Maybe rename?
 
 		[DisplayName("Previously Uploaded Photos -- WTF is that in Chinese?")]
-		public IList<string> OldFileURLs { get; set; }
+        //[SufficientImages]
+        public IList<OldImage> OldFileURLs { get; set; }
 
         public ProductViewModel()
         {
             //We already learned the hard way that you need a parameterless constructor
+            OldFileURLs = new List<OldImage>(); //Maybe this will help?
         }
 
         public static async Task<ProductViewModel> FromDBProduct (ProductDBModel product)
         {
 
             ProductViewModel ret = Mapper.Map<ProductDBModel, ProductViewModel>(product);
-            //This is not done. This may even crash.
-            //Now to convert the IFP objects to strings.
             ret.OldFileURLs = await GetImageURLs(product);
 
             return ret;
         }
 
-        public static async Task<IList<string>> GetImageURLs(ProductDBModel product)
+        public static async Task<IList<OldImage>> GetImageURLs(ProductDBModel product)
         {
             int size = product.ImageFilePaths.Count;
-            IList<string> ret = new List<string>(size);
+            IList<OldImage> ret = new List<OldImage>(size);
             for (int i = 0; i < size; i++)
             {
-                string fileName = product.ImageFilePaths?.ElementAt(i)?.FileName;
+                FilePath filePath = product.ImageFilePaths?.ElementAt(i);
+                string fileName = filePath?.FileName;
                 if (!String.IsNullOrEmpty(fileName))
                 {
                     try
                     {
                         //ret[i] = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
                         string URL = (await GlobalCache.GetImageBlob(fileName)).Uri.AbsoluteUri;
-                        ret.Add(URL);
+                        ret.Add(new OldImage() { URL = URL, FPid = filePath.FilePathId});
                     }
                     catch
                     {
                         //If we can't get the image, just return null. NBD
-                        ret.Add("");
+                        ret.Add(new OldImage(""));
                     }
                 }
             }
             return ret;
         }
 
-        public async Task<ProductDBModel> ToProductDB()
+        /// <summary>
+        /// Has the side effects of uploading images that shoud be uploaded
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProductDBModel> ToProductDB(ProductDBModel oldProduct = null)
         {
-            ProductDBModel ret = Mapper.Map<ProductViewModel, ProductDBModel>(this);//new ProductDBModel();
-                        
-            //now to map the IFormFiles to ImageFilePaths
-            ret.ImageFilePaths = new List<FilePath>();                                                                                                     
+            ProductDBModel ret = Mapper.Map<ProductViewModel, ProductDBModel>(this);
 
-            foreach (IFormFile file in this.ImageFiles)
+            //now to map the IFormFiles to ImageFilePaths
+            ret.ImageFilePaths = new List<FilePath>();
+
+            if(this.ImageFiles !=null)
             {
-                FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
-                ret.ImageFilePaths.Add(uploadedImage);
+                foreach (IFormFile file in this.ImageFiles)
+                {
+                    FilePath uploadedImage = new FilePath() { FileName = await UploadImageWrapper(file) };
+                    ret.ImageFilePaths.Add(uploadedImage);
+                }
             }
 
+            if (oldProduct?.ImageFilePaths != null) {
+                foreach (OldImage oi in this.OldFileURLs)
+                { 
+                    if (!oi.ShouldBeDeleted)
+                    {
+                        FilePath fp = oldProduct.ImageFilePaths.FirstOrDefault(x => x.FilePathId == oi.FPid);
+                        ret.ImageFilePaths.Add(fp);
+                    }
+                }
+            }
             return ret;
         }
 
@@ -133,6 +152,29 @@ namespace TexasTRInventory.Models
 
 
     }
+
+    public class OldImage
+    {
+        public string URL { get; set; }
+        public int FPid { get; set; }
+        public bool ShouldBeDeleted { get; set; }
+
+        public OldImage(string url)
+        {
+            URL = url;
+        }
+
+        //Pretty sure this is never used
+        /*
+        public OldImage(string url, bool sd)
+        {
+            URL = url;
+            ShouldBeDeleted = sd;
+        }*/
+
+        public OldImage() { }//I will never forget that we need an argumentless constructor
+    }
+
     public class SufficientImagesAttribute : ValidationAttribute, IClientModelValidator
 	{
         public static string ErrMsg
@@ -141,9 +183,22 @@ namespace TexasTRInventory.Models
         }
         protected override ValidationResult IsValid(object value, System.ComponentModel.DataAnnotations.ValidationContext validationContext)
 		{
-			IFormFileCollection input = (IFormFileCollection)value;
+            ProductViewModel input = (ProductViewModel)validationContext.ObjectInstance;
 
-			if (input?.Count >= GlobalCache.MinImgFilesCnt())
+            int filesCnt = 0;
+            if (input.OldFileURLs != null)
+            {
+                var nonDeletedFiles = input.OldFileURLs.Where(p => !p.ShouldBeDeleted);
+                filesCnt += nonDeletedFiles.Count();
+            }
+
+
+            if(input.ImageFiles != null)
+            {
+                filesCnt += input.ImageFiles.Count();
+            }
+
+			if (filesCnt >= GlobalCache.MinImgFilesCnt())
 			{
 				return ValidationResult.Success;
 			}
@@ -161,8 +216,8 @@ namespace TexasTRInventory.Models
 			}
 
 			MergeAttribute(context.Attributes, "data-val","true");//not sure what this line does.
-			MergeAttribute(context.Attributes, "data-val-sufficientimages", ErrMsg);
-			MergeAttribute(context.Attributes, "data-val-sufficientimages-cnt", GlobalCache.MinImgFilesCnt().ToString());
+			MergeAttribute(context.Attributes, "data-val-sufficientImages", ErrMsg);
+			MergeAttribute(context.Attributes, "data-val-sufficientImages-cnt", GlobalCache.MinImgFilesCnt().ToString());
 		}
 
 		private bool MergeAttribute(IDictionary<string, string> attributes, string key, string value)

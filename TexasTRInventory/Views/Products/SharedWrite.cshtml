@@ -1,0 +1,217 @@
+﻿@model TexasTRInventory.Models.ProductViewModel
+@using TexasTRInventory.ExternalUtils
+@using System
+
+@{ 
+    int necessaryFiles = GlobalCache.MinImgFilesCnt().GetValueOrDefault();
+    int existingFiles = Model?.OldFileURLs?.Count() ?? default(int);
+    int initialFileFieldsCnt = necessaryFiles - existingFiles >= 0 ? necessaryFiles - existingFiles : 0;
+}
+
+@*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+<script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script> @*TODO maybe load directly from the internet and fallback on my copy?*@
+
+@*not sure what each of these do. But they're recommended by https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation#client-side-validation*@
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.js"></script> @*temporarly replacing .min.js with .js*@
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.js"></script>
+<script src="~/ts/product.js"></script>
+
+<div class="form-horizontal">
+    <h4>Product</h4>
+    <hr />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Brand" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Brand" class="form-control" />
+            <span asp-validation-for="Brand" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="SKU" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="SKU" class="form-control" />
+            <span asp-validation-for="SKU" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Name" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Info" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            @*<input asp-for="Info" class="form-control" />*@
+            @Html.TextArea("Info", null/*TODO make sure that existing text is included*/, 5, 200
+               , null)
+            <span asp-validation-for="Info" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="PackageContents" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="PackageContents" class="form-control" />
+            <span asp-validation-for="PackageContents" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="OurCost" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="OurCost" class="form-control" />
+            <span asp-validation-for="OurCost" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="MAP" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="MAP" class="form-control" />
+            <span asp-validation-for="MAP" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Dimensions" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Dimensions" class="form-control" />
+            <span asp-validation-for="Dimensions" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Weight" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Weight" class="form-control" />
+            <span asp-validation-for="Weight" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="UPC" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="UPC" class="form-control" />
+            <span asp-validation-for="UPC" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Website" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Website" class="form-control" />
+            <span asp-validation-for="Website" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+    @if (Model?.OldFileURLs != null && Model.OldFileURLs.Count > 0)//Apparently Model==null when creating
+    {
+        <label class="col-md-2 control-label">Current Photos</label>
+        <div class="col-md-10">
+            <table>
+                @for (int i = 0; i < Model.OldFileURLs.Count; i++)
+                {
+                    <tr style="border-bottom: 1px solid #ccc">
+                        <td>
+                            <input type="text" hidden="hidden" name="OldFileURLs[@i].URL" value=@Model.OldFileURLs[i].URL />
+                            <input type="number" hidden="hidden" name="OldFileURLs[@i].FPid" value=@Model.OldFileURLs[i].FPid />
+                            <img class="col-md-10" style="max-height:300px;max-width:300px" src=@Model.OldFileURLs[i].URL>
+                        </td>
+                        <td>
+                            <text style="padding-right: 20px">Remove this photo?</text>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="OldFileURLs[@i].ShouldBeDeleted" value="true" class="sufficientImages oldImages"/>
+                        </td>
+                    </tr>
+                }
+            </table>
+         </div>
+    }
+    </div>
+    <div style="display:none">
+        <div class="col-md-10" id="fileUploaderTemplate">
+            <span>
+                <input multiple="" asp-for="ImageFiles" id="fileInputer" onchange="previewFile(this);" style="float:left" class="sufficientImages newImages" />
+                <button type="button" onclick="resetField(this);" style="visibility:hidden; float:left">🗙</button>
+                <script>
+                    var inputField = document.getElementById("fileInputer");
+                    inputField.accept = "image/*";
+                    inputField.removeAttribute("multiple");
+                </script>
+            </span>
+            <br />
+            <div class="imagePreview" style="clear: both;"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageFiles" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <div id="dynamicallyGrowingDiv">
+            </div>
+            <script>initializeFields("dynamicallyGrowingDiv","fileUploaderTemplate",@initialFileFieldsCnt); </script>
+            <div class="col-md-10">
+                <input type="button" onclick="addFileField('dynamicallyGrowingDiv','fileUploaderTemplate')" value="add more files" />
+                <div><span asp-validation-for="ImageFiles" class="text-danger"></span></div>
+            </div>
+        </div>
+    </div>
+
+    @if(ApplicationUserUtils.IsInternalUser(User))
+     {
+        <div class="form-group">
+            <label asp-for="SupplierID" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="SupplierID" class="form-control" asp-items=ViewBag.SupplierID></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PartNumber" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PartNumber" class="form-control" />
+                <span asp-validation-for="PartNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Inventory" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Inventory" class="form-control" />
+                <span asp-validation-for="Inventory" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="AmazonASIN" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="AmazonASIN" class="form-control" />
+                <span asp-validation-for="AmazonASIN" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Dealer" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Dealer" class="form-control" />
+                <span asp-validation-for="Dealer" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Category" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Category" class="form-control" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+        </div>
+
+     }
+    <div class="form-group">
+        <label asp-for="IsAdminApproved" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            @if(ApplicationUserUtils.IsAdmin(User))
+            {
+                <input asp-for="IsAdminApproved" class="form-control" />
+            }
+            else
+            {
+                <input hidden="hidden" asp-for="IsAdminApproved" />
+                <text>@("This product has " + ((Model?.IsAdminApproved).GetValueOrDefault() ? "" : "not yet ") +"been approved by an admin. TODO get in Chinese?")</text>
+            }
+            <span asp-validation-for="IsAdminApproved" class="text-danger"></span>
+        </div>
+    </div>
+</div>

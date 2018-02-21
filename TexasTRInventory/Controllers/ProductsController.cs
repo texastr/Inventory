@@ -17,6 +17,8 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using TexasTRInventory.Constants;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace TexasTRInventory.Controllers
 {
@@ -164,6 +166,7 @@ namespace TexasTRInventory.Controllers
 
             ViewData["SupplierID"] = Utils.CompanyList(_context, product.Supplier);
             var pvm = await ProductViewModel.FromDBProduct(product);
+            //return View("Edit old version, before sharing",pvm);
             return View(pvm);
         }
 
@@ -173,6 +176,73 @@ namespace TexasTRInventory.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductViewModel product)
+        {
+            ProductDBModel existingProduct = await _context.Products.Include(p => p.ImageFilePaths).SingleOrDefaultAsync(m => m.ID == product.ID);
+
+            if (id != product.ID || existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOwnProduct(existingProduct))
+            {
+                return HiddenProductError();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    ProductDBModel pdb = await product.ToProductDB(existingProduct);
+                    DeleteOldImages(product, existingProduct.ImageFilePaths);
+
+                    //now merge pdb with existing product
+                    foreach(PropertyInfo pi in typeof(ProductDBModel).GetProperties())
+                    {
+                        var attr = pi.GetCustomAttribute<RestrictedFieldAttribute>(true);
+                        //TODO. I assume this returns null if the attribute is not defined for that field
+                        if (attr == null || attr.CanUserEdit(User))
+                        {
+                            var value = pi.GetValue(pdb);
+                            pi.SetValue(existingProduct, value);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                    /* handled more generically above
+                    if (!Utils.IsInternalUser(User))
+                    {
+                        pdb.SupplierID = existingProduct.SupplierID;
+                    }*/
+                }
+                catch (FileUploadFailedException e)
+                {
+                    Expression<Func<ProductViewModel, IFormFileCollection>> expression = p => p.ImageFiles;
+                    string key = ExpressionHelper.GetExpressionText(expression);
+                    ModelState.AddModelError(key, e.Message);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(product.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            ViewData["SupplierID"] = new SelectList(_context.Companies, "ID", "ID", product.SupplierID);
+            return View(product);
+        }
+
+        // POST: Products/EditTrash/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OLDEditProbablyTrash(int id, IFormFile upload, [Bind("ID,Brand,SupplierID,SKU,PartNumber,AmazonASIN,Name,Inventory,Info,OurCost,Dealer,MAP,Dimensions,Weight,UPC,Website,PackageContents,Category")] ProductDBModel product)
         {
             ProductDBModel existingProduct = await _context.Products
                 .Include(p => p.Supplier)
@@ -228,6 +298,30 @@ namespace TexasTRInventory.Controllers
             }
             ViewData["SupplierID"] = new SelectList(_context.Companies, "ID", "ID", product.SupplierID);
             return View(product);
+        }
+
+        private async void DeleteOldImages(ProductViewModel pvm, ICollection<FilePath> FPs)
+        {
+            if (pvm.OldFileURLs == null) return;
+
+            foreach (OldImage oi in pvm.OldFileURLs)
+            {
+                if (oi.ShouldBeDeleted)
+                {
+                    FilePath deadMeat = FPs?.FirstOrDefault(fp => fp.FilePathId == oi.FPid);
+                    string fileName = deadMeat?.FileName;
+                    await DeleteImage(fileName);
+                }
+            }
+        }
+
+        private async Task DeleteImage(string fileName)
+        {
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                CloudBlockBlob blob = await GlobalCache.GetImageBlob(fileName); //delete the old file
+                await blob.DeleteIfExistsAsync();
+            }
         }
 
         private async Task<FilePath> GetEmptyFilePath(ProductDBModel product)

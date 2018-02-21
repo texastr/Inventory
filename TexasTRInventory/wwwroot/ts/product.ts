@@ -75,26 +75,35 @@ function displayImageFromURL(URL,divName){
 
 //this makes the client-side validation work to count that there are five files. Some mix of MS, Michael, SO, and moi
 (jQuery as any)(document).ready(function ($) {
-    (jQuery as any).validator.addMethod('sufficientimages',
+    (jQuery as any).validator.addMethod('sufficientImages',
         function (value, element, params) {
-            let elems: HTMLCollectionOf<Element> = document.getElementsByClassName("sufficientimages");
+            let elems: HTMLCollectionOf<Element> = document.getElementsByClassName("newImages");
             let cnt: number = elems.length;
             let minFiles: number = +params[0]; //I thought i could use params.cnt. But if params[0] works, I won't complain
             let filesCnt: number = 0;
             for (let i: number = 0; i < cnt; i++) {
-                let elem: HTMLInputElement = <HTMLInputElement >elems.item(i);
+                let elem: HTMLInputElement = <HTMLInputElement>elems.item(i);
                 if (elem.value !== null && elem.value.length > 0) {
+                    filesCnt++;
+                }
+            }
+
+            elems = document.getElementsByClassName("oldImages")
+            cnt = elems.length
+            for (let j: number = 0; j < cnt; j++){
+                let elem: HTMLInputElement = <HTMLInputElement>elems.item(j);
+                if (!elem.checked) {
                     filesCnt++;
                 }
             }
             return filesCnt >= minFiles;
         });
 
-    (jQuery as any).validator.unobtrusive.adapters.add('sufficientimages',
+    (jQuery as any).validator.unobtrusive.adapters.add('sufficientImages',
         ['cnt'], //No idea what this parameter does. But shit breaks if it's messed with
         function (options) {
-            options.rules['sufficientimages'] = [options.params.cnt];
-            options.messages['sufficientimages'] = options.message;
+            options.rules['sufficientImages'] = [options.params.cnt];
+            options.messages['sufficientImages'] = options.message;
 
         });
 });

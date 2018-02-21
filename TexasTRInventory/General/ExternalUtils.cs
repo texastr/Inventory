@@ -22,5 +22,10 @@ namespace TexasTRInventory.ExternalUtils
         {
             return Utils.IsAdmin(user);
         }
+
+        public static bool IsInternalUser(ClaimsPrincipal user)
+        {
+            return Utils.IsInternalUser(user);
+        }
     }
 }
