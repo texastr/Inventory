@@ -19,7 +19,7 @@ namespace TexasTRInventory.Authorization
                 return Task.FromResult(0);
             }
 
-            if (Utils.CanUserEditUser(context.User,resource))
+            if (Utils.CanUserEditUser(context.User, resource))
             {
                 context.Succeed(requirement);
             }

@@ -9,7 +9,7 @@
       "DEBUG",
       "NET452"
     ],
-    "languageVersion": "",
+    "languageVersion": "latest",
     "platform": "x86",
     "allowUnsafe": false,
     "warningsAsErrors": false,

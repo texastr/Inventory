@@ -108,7 +108,9 @@ namespace TexasTRInventory
             services.AddSingleton<IAuthorizationHandler, InternalUserAuthorizationHandler>(); //EXP 12.7.17. Changing to Singleton. Should be good
             //EXP 12.7.17 adding another handler
             services.AddScoped<IAuthorizationHandler, TooBig4YourBritchesAuthorizationHandler>();
-
+            //EXP 2.27.18 adding another
+            services.AddScoped<IAuthorizationHandler, LockedProductAuthorizationHandler>();
+            
 
             //EXP 9.20.17. I think the scopeds above are wrong. this is how to do it.
             //https://stackoverflow.com/questions/31464359/how-do-you-create-a-custom-authorizeattribute-in-asp-net-core
@@ -116,7 +118,9 @@ namespace TexasTRInventory
             {
                 options.AddPolicy(PolicyNames.IsInternal, policy => policy.Requirements.Add(new InternalUserAuthorizationHandler()));
                 options.AddPolicy(PolicyNames.OnlyAdminsEditAdmins, policy => policy.Requirements.Add(new TooBig4YourBritchesAuthorizationHandler()));
-
+                //EXP 2.27.18 adding more handlers
+                options.AddPolicy(PolicyNames.IsAdmin, policy => policy.Requirements.Add(new AdminAuthorizationHandler()));
+                options.AddPolicy(PolicyNames.CanEditLockedProduct, policy => policy.Requirements.Add(new LockedProductAuthorizationHandler()));
             });
 
             //EXP 9.15.17 Don't understand, but apparently this is good for security

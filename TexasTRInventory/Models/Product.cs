@@ -16,6 +16,7 @@ namespace TexasTRInventory.Models
     /// </summary>
     public abstract class Product
     {
+        [RestrictedField(Constants.ClaimNames.IsInternal)]
         public int? SupplierID { get; set; }
         public Company Supplier { get; set; }
 
@@ -91,7 +92,7 @@ namespace TexasTRInventory.Models
         }
         
     }
-
+    
     [AttributeUsage(AttributeTargets.All, Inherited = false)]
     public class RestrictedFieldAttribute: Attribute
     {

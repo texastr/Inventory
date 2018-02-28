@@ -1,0 +1,174 @@
+﻿@model TexasTRInventory.PaginatedList<TexasTRInventory.Models.ProductViewModel>
+@using TexasTRInventory.ExternalUtils
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Products";
+    IQueryCollection q = Context.Request.Query;
+    //some query string parameter names:
+    string sortOrder = "sortOrder";
+    string pageNum = "pageNum";
+    string pageSize = "pageSize";
+}
+<script src="~/ts/productAdmin.js"></script>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-all-route-data=@General.AugmentedQueryString(q, sortOrder,ViewData["ApprovalSortParm"].ToString()).PrunedQueryString(pageNum)>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().IsAdminApproved)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Brand)
+            </th>
+            <th>
+                <a asp-action="Index" asp-all-route-data=@General.AugmentedQueryString(q, sortOrder,ViewData["SKUSortParm"].ToString()).PrunedQueryString(pageNum)>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().SKU)
+                </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-all-route-data=@General.AugmentedQueryString(q,sortOrder,ViewData["NameSortParm"].ToString()).PrunedQueryString(pageNum)>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                </a>
+            </th>
+            <th style=" max-width: 200000px;">
+
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Info)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().OurCost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().MAP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Dimensions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().UPC)
+            </th>
+            @if (Utils.IsInternalUser(User))
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Supplier)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().PartNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstOrDefault().Dealer)
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for(int i = 0; i <Model.Count; i++)
+
+        {
+            <tr>
+                <td>
+                    @if (ApplicationUserUtils.IsAdmin(User))
+                    {
+                        <div><input asp-for=@Model[i].IsAdminApproved onclick="toggleApproval(this.parentElement);" /></div>
+                        <input hidden="hidden" asp-for=@Model[i].ID/>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => modelItem[i].IsAdminApprovedStr);
+                }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].Brand)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].SKU)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].Name)
+                </td>
+
+                <td style=" max-width: 200000px;">
+                    @Html.DisplayFor(modelItem => modelItem[i].Info)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].OurCost)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].MAP)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].Dimensions)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].Weight)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => modelItem[i].UPC)
+                </td>
+                @*EXP 9.18.17. hiding this for external users*@
+                @if (ApplicationUserUtils.IsInternalUser(User))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].Supplier.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].PartNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].Dealer)
+                    </td>
+
+                }
+                <td>
+                    @if (ApplicationUserUtils.CanUserEditProduct(User, Model[i]))
+                    {
+                        <a asp-action="Edit" asp-route-id=@Model[i].ID>Edit</a> <br />
+                        <a asp-action="Details" asp-route-id=@Model[i].ID>Details</a><br />
+                        <a asp-action="Delete" asp-route-id=@Model[i].ID>Delete</a><br />
+                    }
+                    else
+                    {
+                        <a asp-action="Details" asp-route-id=@Model[i].ID>Details</a><br />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-all-route-data=@General.AugmentedQueryString(q,pageNum,(Model.PageIndex-1).ToString())
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-all-route-data=@General.AugmentedQueryString(q,pageNum,(Model.PageIndex+1).ToString())
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+
+Products per page:
+
+@{
+    string[] pageSizes = { "10", "20", "50", "100", "all" };
+    foreach (string size in pageSizes)
+    {
+        <a asp-action="Index" asp-all-route-data=@General.AugmentedQueryString(q,pageSize,size)>@size</a>
+    }
+}

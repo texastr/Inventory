@@ -28,6 +28,21 @@ namespace TexasTRInventory.Models
         //[SufficientImages]
         public IList<OldImage> OldFileURLs { get; set; }
 
+        public string IsAdminApprovedStr
+        {
+            get
+            {
+                if (this.IsAdminApproved)
+                {
+                    return "Approved -- TODO Get Chinese";
+                }
+                else
+                {
+                    return "Pedning Admin Approval -- CHINESE?";
+                }
+            }
+        }
+
         public ProductViewModel()
         {
             //We already learned the hard way that you need a parameterless constructor
@@ -45,7 +60,7 @@ namespace TexasTRInventory.Models
 
         public static async Task<IList<OldImage>> GetImageURLs(ProductDBModel product)
         {
-            int size = product.ImageFilePaths.Count;
+            int size = product?.ImageFilePaths?.Count ?? 0;
             IList<OldImage> ret = new List<OldImage>(size);
             for (int i = 0; i < size; i++)
             {

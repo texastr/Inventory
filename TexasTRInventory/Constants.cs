@@ -21,6 +21,8 @@ namespace TexasTRInventory.Constants
     {
         public const string IsInternal = "IsInternal";
         public const string OnlyAdminsEditAdmins = "OnlyAdminsEditAdmins";
+        public const string IsAdmin = "IsAdmin";
+        public const string CanEditLockedProduct = "CanEditLockedProduct";
     }
         
     public static class KeyNames

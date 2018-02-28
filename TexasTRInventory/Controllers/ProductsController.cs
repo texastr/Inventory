@@ -1,42 +1,61 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using TexasTRInventory.Constants;
 using TexasTRInventory.Data;
 using TexasTRInventory.Models;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.Windows.Forms;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using TexasTRInventory.Constants;
-using System.Reflection;
-using System.Collections.Generic;
 
 namespace TexasTRInventory.Controllers
 {
-    
+
     [Authorize]
     public class ProductsController : Controller
     {
         private readonly InventoryContext _context;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ProductsController(InventoryContext context)
+        public ProductsController(InventoryContext context, IAuthorizationService authorizationService)
         {
             _context = context;
+            _authorizationService = authorizationService;
+        }
+
+        // POST: Products
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = PolicyNames.IsAdmin)]
+        public async Task<IActionResult> Index(IList<ProductViewModel> pvms, string sortOrder, int? pageNum, string pageSize)
+        {
+            Dictionary <int,bool> approvals = pvms.ToDictionary(p => p.ID, p=> p.IsAdminApproved);
+            var pdms = await _context.Products.Where(p => approvals.ContainsKey(p.ID)).ToListAsync();
+            pdms.ForEach(p => p.IsAdminApproved = approvals[p.ID]);
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction("Index","Products",
+                new Dictionary<string, object>()
+                {
+                    {nameof(sortOrder), sortOrder },
+                    {nameof(pageNum), pageNum },
+                    {nameof(pageSize), pageSize }
+                }
+            );
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(string sortOrder, int? page, string pageSize)
+        [HttpGet]
+        public async Task<IActionResult> Index(string sortOrder, int? pageNum, string pageSize)
         {
-
 			IQueryable<ProductDBModel> products;
             if (Utils.IsInternalUser(User))
             {
@@ -49,20 +68,27 @@ namespace TexasTRInventory.Controllers
             }
 
             //EXP 9.28.17. Interpreting the sortOrderParam
-            ViewData["CurrentSort"] = sortOrder;
+            //ViewData["CurrentSort"] = sortOrder; //EXP 2.26.18. I think this should be deleted, because i'm not implementing it the way MS did
             ViewData["SKUSortParm"] = String.IsNullOrEmpty(sortOrder) ? "SKU_desc" : "";
             ViewData["NameSortParm"] = sortOrder == "name" ? "name_desc" : "name";
+            ViewData["ApprovalSortParm"] = sortOrder == "approval" ? "approval_desc" : "approval";
 
             switch (sortOrder)
             {
                 case "SKU_desc":
                     products = products.OrderByDescending(p => p.SKU);
                     break;
-                case "Name":
+                case "name":
                     products = products.OrderBy(p => p.Name);
                     break;
                 case "name_desc":
                     products = products.OrderByDescending(p => p.Name);
+                    break;
+                case "approval":
+                    products = products.OrderBy(p => p.IsAdminApproved);
+                    break;
+                case "approval_desc":
+                    products = products.OrderByDescending(p => p.IsAdminApproved);
                     break;
                 default:
                     products = products.OrderBy(s => s.SKU);
@@ -74,7 +100,10 @@ namespace TexasTRInventory.Controllers
             {
                 pageSizeInt = int.MaxValue;
             }
-            return View(await PaginatedList<Product>.CreateAsync(products.AsNoTracking(),page ?? 1, pageSizeInt));
+
+            IQueryable<Task<ProductViewModel>> pvms = products.AsNoTracking().Select(p => ProductViewModel.FromDBProduct(p));
+            var pl = await PaginatedList<ProductViewModel>.CreateAsync(pvms, pageNum ?? 1, pageSizeInt);
+            return View(pl);
         }
 
         // GET: Products/Details/5
@@ -164,6 +193,11 @@ namespace TexasTRInventory.Controllers
                 return HiddenProductError();
             }
 
+            if (await FailsLockedProductPolicy(product))
+            {
+                return new ChallengeResult();
+            }
+
             ViewData["SupplierID"] = Utils.CompanyList(_context, product.Supplier);
             var pvm = await ProductViewModel.FromDBProduct(product);
             //return View("Edit old version, before sharing",pvm);
@@ -189,6 +223,11 @@ namespace TexasTRInventory.Controllers
                 return HiddenProductError();
             }
 
+            if (await FailsLockedProductPolicy(product))
+            {
+                return new ChallengeResult();
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -200,7 +239,6 @@ namespace TexasTRInventory.Controllers
                     foreach(PropertyInfo pi in typeof(ProductDBModel).GetProperties())
                     {
                         var attr = pi.GetCustomAttribute<RestrictedFieldAttribute>(true);
-                        //TODO. I assume this returns null if the attribute is not defined for that field
                         if (attr == null || attr.CanUserEdit(User))
                         {
                             var value = pi.GetValue(pdb);
@@ -367,6 +405,11 @@ namespace TexasTRInventory.Controllers
                 return HiddenProductError();
             }
 
+            if (await FailsLockedProductPolicy(product))
+            {
+                return new ChallengeResult();
+            }
+
             ProductViewModel pvm = await ProductViewModel.FromDBProduct(product);
             return View(pvm);
         }
@@ -381,6 +424,11 @@ namespace TexasTRInventory.Controllers
             if (!User.IsOwnProduct(product))
             {
                 return HiddenProductError();
+            }
+
+            if(await FailsLockedProductPolicy(product))
+            {
+                return new ChallengeResult();
             }
             
             //EXP 9.6.17
@@ -415,6 +463,11 @@ namespace TexasTRInventory.Controllers
         {
             ViewData[KeyNames.ErrorDetails] = "You do not have the right to access that product.";
             return View("Error");
+        }
+
+        private async Task<bool> FailsLockedProductPolicy(Product product)
+        {
+            return !(await _authorizationService.AuthorizeAsync(User, product, PolicyNames.CanEditLockedProduct));
         }
     }
 

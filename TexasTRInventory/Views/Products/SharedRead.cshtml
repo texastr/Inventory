@@ -1,12 +1,12 @@
 ﻿@model TexasTRInventory.Models.ProductViewModel
 @using Microsoft.AspNetCore.Html;
 @using TexasTRInventory.Models;
+@using TexasTRInventory.ExternalUtils;
 
 <script src="~/js/3rdParty/Load-Image/js/load-image.all.min.js"></script>
 <script src="~/ts/product.js"></script>
 
-<div onload="alert('heading')">
-    @*<h4 onload="alert('heading')">Product</h4> EXP 2.14.18. Why keep this in?*@
+<div>
     <hr />
     <dl class="dl-horizontal">
         <input type="hidden" asp-for="ID" /> @*Shouldn't hurt to have this in the details view*@
@@ -137,7 +137,7 @@
             @Html.DisplayNameFor(model => model.IsAdminApproved)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsAdminApproved)
+            @Html.DisplayFor(model => model.IsAdminApprovedStr)
         </dd>
     </dl>
 </div>

@@ -1,144 +1,29 @@
-@model TexasTRInventory.PaginatedList<TexasTRInventory.Models.Product>
-
-@{
-    ViewData["Title"] = "Products";
-}
+@using TexasTRInventory.ExternalUtils
 
 <h2>@ViewData["Title"]</h2>
 
     <p>
         <a asp-action="Create">Create a New Product</a>
-        @if (Utils.IsInternalUser(User))
+        @if (ApplicationUserUtils.IsInternalUser(User))
         {
             <br />
             <a asp-controller="CSVs" > See All Products in CSV form</a >
         }
     </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Brand)
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["SKUSortParm"]">@Html.DisplayNameFor(model => model.FirstOrDefault().SKU)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.FirstOrDefault().Name)</a>
-            </th>
-            <th style=" max-width: 200000px;">
-
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Info)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().OurCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().MAP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Dimensions)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().UPC)
-            </th>
-            @if (Utils.IsInternalUser(User))
-            {
-                <th>
-                    @Html.DisplayNameFor(model => model.FirstOrDefault().Supplier)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FirstOrDefault().PartNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FirstOrDefault().Dealer)
-                </th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SKU)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td style=" max-width: 200000px;">
-                @Html.DisplayFor(modelItem => item.Info)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OurCost)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MAP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Dimensions)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UPC)
-            </td>
-            @*EXP 9.18.17. hiding this for external users*@
-            @if(Utils.IsInternalUser(User))
-            {
-                <td>
-                @Html.DisplayFor(modelItem => item.Supplier.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PartNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Dealer)
-                </td>
-
-}
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> <br/>
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a><br />
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a><br />
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-page="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-page="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
-
-Products per page:
-
-@{
-    string[] pageSizes = { "10", "20", "50", "100", "all" };
-    foreach (string size in pageSizes)
+@if (ApplicationUserUtils.IsAdmin(User))
+{
+    @using (Html.BeginForm())
     {
-        <a asp-action="Index" asp-route-pageSize=@size>@size</a>
+        @Html.AntiForgeryToken()
+        
+        @Html.Partial("Table")
+        <br/><br/>
+        <div class="form-group">
+            <input type="submit" value="Update approval statuses" class="btn btn-default" disabled="disabled" id="btnSubmit"/>
+        </div>
     }
+}
+else
+{
+    @Html.Partial("Table");
 }

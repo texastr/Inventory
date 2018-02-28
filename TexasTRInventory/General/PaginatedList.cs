@@ -36,10 +36,15 @@ namespace TexasTRInventory
             }
         }
 
-        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
+        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<Task<T>> source, int pageIndex, int pageSize)
         {
             var count = await source.CountAsync();
-            var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            var tasks = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            var items = new List<T>();
+            foreach(Task<T> task in tasks)
+            {
+                items.Add(await task);
+            }
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
     }

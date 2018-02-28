@@ -61,11 +61,6 @@ namespace TexasTRInventory
 		}
         */
 
-		public static IHtmlContent QuotedString(this IHtmlHelper htmlHelper, string arg)
-		{
-			return htmlHelper.Raw("\"" + arg + "\"");
-		}
-
         public static bool IsInternalUser(ClaimsPrincipal user)
         {
             //EXP 9.20.17 no more roles. Everything is supplier.
@@ -95,6 +90,15 @@ namespace TexasTRInventory
                 return false;
             }
             //If we make it here, the user is internal, an admin, trying to delete an admin. wtf. Let him do it. let them squabble
+            return true;
+        }
+
+        public static bool CanUserEditProduct(ClaimsPrincipal user, Product product)
+        {
+            if (!IsInternalUser(user) && product.IsAdminApproved)
+            {
+                return false;
+            }
             return true;
         }
 
